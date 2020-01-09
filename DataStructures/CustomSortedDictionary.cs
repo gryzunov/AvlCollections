@@ -21,7 +21,7 @@ namespace DataStructures
             return _set.Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
-        internal class KeyValuePairComparer : Comparer<KeyValuePair<TKey, TValue>>
+        internal class KeyValuePairComparer: Comparer<KeyValuePair<TKey, TValue>>
         {
             internal IComparer<TKey> _keyComparer;
 
