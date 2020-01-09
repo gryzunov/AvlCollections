@@ -191,6 +191,10 @@ namespace DataStructures
                     {
                         var left = new Node { Key = key, Parent = current };
                         // node should be inserted BEFORE current.
+                        left.Next = current;
+                        left.Prev = current.Prev;
+                        current.Prev.Next = left;
+                        current.Prev = left;
                         current.Left = left;
                         node = left;
                         InsertBalance(current, 1);
@@ -205,6 +209,10 @@ namespace DataStructures
                     {
                         var right = new Node { Key = key, Parent = current };
                         // node should be inserted AFTER current.
+                        right.Prev = current;
+                        right.Next = current.Next;
+                        current.Next.Prev = right;
+                        current.Next = right;
                         current.Right = right;
                         node = right;
                         InsertBalance(current, -1);
@@ -223,6 +231,7 @@ namespace DataStructures
             newNode.Next = newNode;
             newNode.Prev = newNode;
             _root = newNode;
+            _head = newNode;
             node = newNode;
             _count++;
             return false;
@@ -230,30 +239,12 @@ namespace DataStructures
 
         public Node GetLeftmostNode()
         {
-            if (_root == null)
-            {
-                return null;
-            }
-            var current = _root;
-            while (current.Left != null)
-            {
-                current = current.Left;
-            }
-            return current;
+            return _head;
         }
 
         public Node GetRightmostNode()
         {
-            if (_root == null)
-            {
-                return null;
-            }
-            var current = _root;
-            while (current.Right != null)
-            {
-                current = current.Right;
-            }
-            return current;
+            return _head != null ? _head.Prev : null;
         }
 
         public void RemoveNode(Node node)
