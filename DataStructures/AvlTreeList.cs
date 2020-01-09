@@ -765,7 +765,7 @@ namespace DataStructures
             private KeyValuePair<TKey, TValue> _current;
             private bool _hasValue;
 
-            public Enumerator(Node head)
+            internal Enumerator(Node head)
             {
                 _head = head;
                 _node = head;
@@ -892,7 +892,7 @@ namespace DataStructures
                 private TKey _current;
                 private bool _hasValue;
 
-                public KeyEnumerator(Node head)
+                internal KeyEnumerator(Node head)
                 {
                     _head = head;
                     _node = head;
@@ -1020,7 +1020,7 @@ namespace DataStructures
                 private TValue _current;
                 private bool _hasValue;
 
-                public ValueEnumerator(Node head)
+                internal ValueEnumerator(Node head)
                 {
                     _head = head;
                     _node = head;
