@@ -70,7 +70,7 @@ namespace DataStructures
                 value = node.Value;
                 return true;
             }
-            value = default(TValue);
+            value = default;
             return false;
         }
 
@@ -244,7 +244,7 @@ namespace DataStructures
 
         public Node GetRightmostNode()
         {
-            return _head != null ? _head.Prev : null;
+            return _head?.Prev;
         }
 
         public void RemoveNode(Node node)
@@ -674,52 +674,16 @@ namespace DataStructures
 
         private void InOrderTreeWalk(Func<Node, bool> callback)
         {
-            if (_root == null)
+            var node = _head;
+            if (node != null)
             {
-                return;
-            }
-            Node current = null;
-            var right = _root;
-            var action = Action.Right;
-            while (true)
-            {
-                switch (action)
+                do
                 {
-                    case Action.Right:
-                        current = right;
-                        Debug.Assert(current != null, "current != null");
-                        while (current.Left != null)
-                        {
-                            current = current.Left;
-                        }
-                        right = current.Right;
-                        action = right != null ? Action.Right : Action.Parent;
-                        if (!callback(current))
-                        {
-                            return;
-                        }
-                        break;
-                    case Action.Parent:
-                        Debug.Assert(current != null, "current != null");
-                        if (current.Parent == null)
-                        {
-                            return;
-                        }
-                        var previous = current;
-                        current = current.Parent;
-                        if (current.Left == previous)
-                        {
-                            right = current.Right;
-                            action = right != null ? Action.Right : Action.Parent;
-                            if (!callback(current))
-                            {
-                                return;
-                            }
-                        }
-                        break;
-                    default:
+                    if (!callback(node))
+                    {
                         return;
-                }
+                    }
+                } while (node != _head);
             }
         }
 
@@ -794,58 +758,53 @@ namespace DataStructures
 
         public struct Enumerator: IEnumerator<KeyValuePair<TKey, TValue>>
         {
-            private readonly Node _root;
-            private Node _current;
-            private Node _right;
-            private Action _action;
+            private readonly Node _head;
+            private Node _node;
+            private KeyValuePair<TKey, TValue> _current;
+            private bool _hasValue;
 
-            public Enumerator(Node root)
+            public Enumerator(Node head)
             {
-                _root = root;
-                _right = root;
-                _current = null;
-                _action = _root == null ? Action.End : Action.Right;
+                _head = head;
+                _node = head;
+                _hasValue = false;
             }
 
             public bool MoveNext()
             {
-                switch (_action)
+                if (_node == null)
                 {
-                    case Action.Right:
-                        _current = _right;
-                        while (_current.Left != null)
-                        {
-                            _current = _current.Left;
-                        }
-                        _right = _current.Right;
-                        _action = _right != null ? Action.Right : Action.Parent;
-                        return true;
-                    case Action.Parent:
-                        while (_current.Parent != null)
-                        {
-                            var previous = _current;
-                            _current = _current.Parent;
-                            if (_current.Left == previous)
-                            {
-                                _right = _current.Right;
-                                _action = _right != null ? Action.Right : Action.Parent;
-                                return true;
-                            }
-                        }
-                        _action = Action.End;
-                        return false;
-                    default:
-                        return false;
+                    _hasValue = false;
+                    return false;
                 }
+                _current = new KeyValuePair<TKey, TValue>(_node.Key, _node.Value);
+                _node = _node.Next;
+                _hasValue = true;
+                if (ReferenceEquals(_node, _head))
+                {
+                    _node = null;
+                }
+                return true;
             }
 
             public void Reset()
             {
-                _right = _root;
-                _action = _root == null ? Action.End : Action.Right;
+                _node = _head;
+                _current = default;
+                _hasValue = false;
             }
 
-            public KeyValuePair<TKey, TValue> Current => new KeyValuePair<TKey, TValue>(_current.Key, _current.Value);
+            public KeyValuePair<TKey, TValue> Current
+            {
+                get
+                {
+                    if (!_hasValue)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    return _current;
+                }
+            }
 
             object IEnumerator.Current => Current;
 
@@ -925,58 +884,54 @@ namespace DataStructures
 
             public struct KeyEnumerator: IEnumerator<TKey>
             {
-                private readonly Node _root;
-                private Node _current;
-                private Node _right;
-                private Action _action;
+                private readonly Node _head;
+                private Node _node;
+                private TKey _current;
+                private bool _hasValue;
 
-                public KeyEnumerator(Node root)
+                public KeyEnumerator(Node head)
                 {
-                    _root = root;
-                    _right = root;
-                    _current = null;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _head = head;
+                    _node = head;
+                    _current = default;
+                    _hasValue = false;
                 }
 
                 public bool MoveNext()
                 {
-                    switch (_action)
+                    if (_node == null)
                     {
-                        case Action.Right:
-                            _current = _right;
-                            while (_current.Left != null)
-                            {
-                                _current = _current.Left;
-                            }
-                            _right = _current.Right;
-                            _action = _right != null ? Action.Right : Action.Parent;
-                            return true;
-                        case Action.Parent:
-                            while (_current.Parent != null)
-                            {
-                                var previous = _current;
-                                _current = _current.Parent;
-                                if (_current.Left == previous)
-                                {
-                                    _right = _current.Right;
-                                    _action = _right != null ? Action.Right : Action.Parent;
-                                    return true;
-                                }
-                            }
-                            _action = Action.End;
-                            return false;
-                        default:
-                            return false;
+                        _hasValue = false;
+                        return false;
                     }
+                    _current = _node.Key;
+                    _node = _node.Next;
+                    _hasValue = true;
+                    if (ReferenceEquals(_node, _head))
+                    {
+                        _node = null;
+                    }
+                    return true;
                 }
 
                 public void Reset()
                 {
-                    _right = _root;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _node = _head;
+                    _current = default;
+                    _hasValue = false;
                 }
 
-                public TKey Current => _current.Key;
+                public TKey Current
+                {
+                    get
+                    {
+                        if (!_hasValue)
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        return _current;
+                    }
+                }
 
                 object IEnumerator.Current => Current;
 
