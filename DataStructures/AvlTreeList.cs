@@ -9,6 +9,7 @@ namespace DataStructures
     {
         private readonly IComparer<TKey> _comparer;
         private Node _root;
+        private Node _head;
         private KeyCollection _keys;
         private ValueCollection _values;
         private int _count;
@@ -26,6 +27,8 @@ namespace DataStructures
         public int Count => _count;
 
         public Node Root => _root;
+
+        public Node Head => _head;
 
         public KeyCollection Keys => _keys ?? (_keys = new KeyCollection(this));
 
@@ -186,8 +189,10 @@ namespace DataStructures
                 {
                     if (current.Left == null)
                     {
-                        current.Left = new Node { Key = key, Parent = current };
-                        node = current.Left;
+                        var left = new Node { Key = key, Parent = current };
+                        // node should be inserted BEFORE current.
+                        current.Left = left;
+                        node = left;
                         InsertBalance(current, 1);
                         _count++;
                         return false;
@@ -198,8 +203,10 @@ namespace DataStructures
                 {
                     if (current.Right == null)
                     {
-                        current.Right = new Node { Key = key, Parent = current };
-                        node = current.Right;
+                        var right = new Node { Key = key, Parent = current };
+                        // node should be inserted AFTER current.
+                        current.Right = right;
+                        node = right;
                         InsertBalance(current, -1);
                         _count++;
                         return false;
@@ -212,8 +219,11 @@ namespace DataStructures
                     return true;
                 }
             }
-            _root = new Node { Key = key };
-            node = _root;
+            var newNode = new Node { Key = key };
+            newNode.Next = newNode;
+            newNode.Prev = newNode;
+            _root = newNode;
+            node = newNode;
             _count++;
             return false;
         }
@@ -266,6 +276,9 @@ namespace DataStructures
                     if (node == _root)
                     {
                         _root = null;
+                        _head = null;
+                        _count = 0;
+                        return;
                     }
                     else
                     {
@@ -364,6 +377,11 @@ namespace DataStructures
                     }
                     DeleteBalance(successorParent, -1);
                 }
+            }
+            if (_head != null)
+            {
+                node.Next.Prev = node.Prev;
+                node.Prev.Next = node.Next;
             }
             _count--;
         }
