@@ -82,33 +82,34 @@ namespace DataStructures
 
         public bool ContainsValue(TValue value)
         {
-            var found = false;
-            if (value == null)
+            var node = _head;
+            if (node != null)
             {
-                InOrderTreeWalk(node =>
+                if (value == null)
                 {
-                    if (node.Value == null)
+                    do
                     {
-                        found = true;
-                        return false; // stop tree walk
-                    }
-                    return true;
-                });
-            }
-            else
-            {
-                var comparer = EqualityComparer<TValue>.Default;
-                InOrderTreeWalk(node =>
+                        if (node.Value == null)
+                        {
+                            return true;
+                        }
+                        node = node.Next;
+                    } while (node != _head);
+                }
+                else
                 {
-                    if (comparer.Equals(node.Value, value))
+                    var comparer = EqualityComparer<TValue>.Default;
+                    do
                     {
-                        found = true;
-                        return false; // stop tree walk
-                    }
-                    return true;
-                });
+                        if (comparer.Equals(node.Value, value))
+                        {
+                            return true;
+                        }
+                        node = node.Next;
+                    } while (node != _head);
+                }
             }
-            return found;
+            return false;
         }
 
         public bool Add(TKey key, TValue value)
@@ -664,12 +665,12 @@ namespace DataStructures
 
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(_root);
+            return new Enumerator(_head);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Enumerator(_root);
+            return new Enumerator(_head);
         }
 
         private void InOrderTreeWalk(Func<Node, bool> callback)
@@ -683,6 +684,7 @@ namespace DataStructures
                     {
                         return;
                     }
+                    node = node.Next;
                 } while (node != _head);
             }
         }
@@ -741,7 +743,7 @@ namespace DataStructures
 
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            return new Enumerator(_root);
+            return new Enumerator(_head);
         }
 
         public class Node
@@ -767,6 +769,7 @@ namespace DataStructures
             {
                 _head = head;
                 _node = head;
+                _current = default;
                 _hasValue = false;
             }
 
@@ -869,17 +872,17 @@ namespace DataStructures
 
             public KeyEnumerator GetEnumerator()
             {
-                return new KeyEnumerator(_tree.Root);
+                return new KeyEnumerator(_tree.Head);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return new KeyEnumerator(_tree.Root);
+                return new KeyEnumerator(_tree.Head);
             }
 
             IEnumerator<TKey> IEnumerable<TKey>.GetEnumerator()
             {
-                return new KeyEnumerator(_tree.Root);
+                return new KeyEnumerator(_tree.Head);
             }
 
             public struct KeyEnumerator: IEnumerator<TKey>
@@ -997,73 +1000,69 @@ namespace DataStructures
 
             public ValueEnumerator GetEnumerator()
             {
-                return new ValueEnumerator(_tree.Root);
+                return new ValueEnumerator(_tree.Head);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return new ValueEnumerator(_tree.Root);
+                return new ValueEnumerator(_tree.Head);
             }
 
             IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
             {
-                return new ValueEnumerator(_tree.Root);
+                return new ValueEnumerator(_tree.Head);
             }
 
             public struct ValueEnumerator: IEnumerator<TValue>
             {
-                private readonly Node _root;
-                private Node _current;
-                private Node _right;
-                private Action _action;
+                private readonly Node _head;
+                private Node _node;
+                private TValue _current;
+                private bool _hasValue;
 
-                public ValueEnumerator(Node root)
+                public ValueEnumerator(Node head)
                 {
-                    _root = root;
-                    _right = root;
-                    _current = null;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _head = head;
+                    _node = head;
+                    _current = default;
+                    _hasValue = false;
                 }
 
                 public bool MoveNext()
                 {
-                    switch (_action)
+                    if (_node == null)
                     {
-                        case Action.Right:
-                            _current = _right;
-                            while (_current.Left != null)
-                            {
-                                _current = _current.Left;
-                            }
-                            _right = _current.Right;
-                            _action = _right != null ? Action.Right : Action.Parent;
-                            return true;
-                        case Action.Parent:
-                            while (_current.Parent != null)
-                            {
-                                var previous = _current;
-                                _current = _current.Parent;
-                                if (_current.Left == previous)
-                                {
-                                    _right = _current.Right;
-                                    _action = _right != null ? Action.Right : Action.Parent;
-                                    return true;
-                                }
-                            }
-                            _action = Action.End;
-                            return false;
-                        default:
-                            return false;
+                        _hasValue = false;
+                        return false;
                     }
+                    _current = _node.Value;
+                    _node = _node.Next;
+                    _hasValue = true;
+                    if (ReferenceEquals(_node, _head))
+                    {
+                        _node = null;
+                    }
+                    return true;
                 }
 
                 public void Reset()
                 {
-                    _right = _root;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _node = _head;
+                    _current = default;
+                    _hasValue = false;
                 }
 
-                public TValue Current => _current.Value;
+                public TValue Current
+                {
+                    get
+                    {
+                        if (!_hasValue)
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        return _current;
+                    }
+                }
 
                 object IEnumerator.Current => Current;
 
@@ -1071,13 +1070,6 @@ namespace DataStructures
                 {
                 }
             }
-        }
-
-        private enum Action
-        {
-            Parent,
-            Right,
-            End
         }
     }
 }
