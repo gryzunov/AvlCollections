@@ -56,7 +56,7 @@ namespace DataStructures
             }
             set
             {
-                FindOrCreateNode(key, out var node);
+                _ = FindOrCreateNode(key, out var node);
                 node.Value = value;
             }
         }
@@ -367,11 +367,11 @@ namespace DataStructures
                 {
                     if (node.Left.Balance == 1)
                     {
-                        RotateRight(node);
+                        _ = RotateRight(node);
                     }
                     else
                     {
-                        RotateLeftRight(node);
+                        _ = RotateLeftRight(node);
                     }
                     return;
                 }
@@ -379,11 +379,11 @@ namespace DataStructures
                 {
                     if (node.Right.Balance == -1)
                     {
-                        RotateLeft(node);
+                        _ = RotateLeft(node);
                     }
                     else
                     {
-                        RotateRightLeft(node);
+                        _ = RotateRightLeft(node);
                     }
                     return;
                 }
@@ -651,12 +651,12 @@ namespace DataStructures
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
-            Add(key, value);
+            _ = Add(key, value);
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            Add(item.Key, item.Value);
+            _ = Add(item.Key, item.Value);
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
