@@ -44,5 +44,19 @@ namespace DataStructures.Tests
             Assert.Equal(15, tree.First.Next.Next.Key);
             Assert.Equal(15, tree.Last.Prev.Prev.Key);
         }
+
+        [Fact]
+        public void RemoveSingleItem()
+        {
+            var tree = new AvlTreeList<int, int>()
+            {
+                {1, 1}
+            };
+            var removed = tree.Remove(1);
+            Assert.True(removed);
+            Assert.Empty(tree);
+            Assert.Null(tree.First);
+            Assert.Null(tree.Last);
+        }
     }
 }
