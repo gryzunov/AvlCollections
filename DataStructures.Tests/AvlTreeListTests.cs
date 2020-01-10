@@ -24,5 +24,25 @@ namespace DataStructures.Tests
             Assert.NotNull(tree.Last);
             Assert.Same(tree.First, tree.Last);
         }
+
+        [Fact]
+        public void RandomInsertTest()
+        {
+            var tree = new AvlTreeList<int, int>
+            {
+                { 15, 15 },
+                { 7, 7 },
+                { 6, 6 },
+                { 25, 25 },
+                { 20, 20 }
+            };
+            Assert.Equal(5, tree.Count);
+            Assert.Equal(6, tree.First.Key);
+            Assert.Equal(25, tree.Last.Key);
+            Assert.Equal(7, tree.First.Next.Key);
+            Assert.Equal(20, tree.Last.Prev.Key);
+            Assert.Equal(15, tree.First.Next.Next.Key);
+            Assert.Equal(15, tree.Last.Prev.Prev.Key);
+        }
     }
 }
