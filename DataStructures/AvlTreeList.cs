@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace DataStructures
 {
@@ -26,9 +25,9 @@ namespace DataStructures
 
         public int Count => _count;
 
-        public Node Root => _root;
+        public Node First => _head;
 
-        public Node Head => _head;
+        public Node Last => _head?.Prev;
 
         public KeyCollection Keys => _keys ?? (_keys = new KeyCollection(this));
 
@@ -85,29 +84,15 @@ namespace DataStructures
             var node = _head;
             if (node != null)
             {
-                if (value == null)
+                var comparer = EqualityComparer<TValue>.Default;
+                do
                 {
-                    do
+                    if (comparer.Equals(node.Value, value))
                     {
-                        if (node.Value == null)
-                        {
-                            return true;
-                        }
-                        node = node.Next;
-                    } while (node != _head);
-                }
-                else
-                {
-                    var comparer = EqualityComparer<TValue>.Default;
-                    do
-                    {
-                        if (comparer.Equals(node.Value, value))
-                        {
-                            return true;
-                        }
-                        node = node.Next;
-                    } while (node != _head);
-                }
+                        return true;
+                    }
+                    node = node.Next;
+                } while (node != _head);
             }
             return false;
         }
@@ -147,6 +132,7 @@ namespace DataStructures
         public void Clear()
         {
             _root = null;
+            _head = null;
             _count = 0;
         }
 
@@ -236,16 +222,6 @@ namespace DataStructures
             node = newNode;
             _count++;
             return false;
-        }
-
-        public Node GetLeftmostNode()
-        {
-            return _head;
-        }
-
-        public Node GetRightmostNode()
-        {
-            return _head?.Prev;
         }
 
         public void RemoveNode(Node node)
@@ -673,22 +649,6 @@ namespace DataStructures
             return new Enumerator(_head);
         }
 
-        private void InOrderTreeWalk(Func<Node, bool> callback)
-        {
-            var node = _head;
-            if (node != null)
-            {
-                do
-                {
-                    if (!callback(node))
-                    {
-                        return;
-                    }
-                    node = node.Next;
-                } while (node != _head);
-            }
-        }
-
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             Add(key, value);
@@ -723,11 +683,15 @@ namespace DataStructures
             {
                 throw new ArgumentException(nameof(index));
             }
-            InOrderTreeWalk(node =>
+            var node = _head;
+            if (node != null)
             {
-                array[index++] = new KeyValuePair<TKey, TValue>(node.Key, node.Value);
-                return true;
-            });
+                do
+                {
+                    array[index++] = new KeyValuePair<TKey, TValue>(node.Key, node.Value);
+                    node = node.Next;
+                } while (node != _head);
+            }
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -746,7 +710,7 @@ namespace DataStructures
             return new Enumerator(_head);
         }
 
-        public class Node
+        public sealed class Node
         {
             public Node Parent { get; internal set; }
             public Node Left { get; internal set; }
@@ -783,7 +747,7 @@ namespace DataStructures
                 _current = new KeyValuePair<TKey, TValue>(_node.Key, _node.Value);
                 _node = _node.Next;
                 _hasValue = true;
-                if (ReferenceEquals(_node, _head))
+                if (_node == _head)
                 {
                     _node = null;
                 }
@@ -822,7 +786,7 @@ namespace DataStructures
 
             public KeyCollection(AvlTreeList<TKey, TValue> tree)
             {
-                _tree = tree;
+                _tree = tree ?? throw new ArgumentNullException(nameof(tree));
             }
 
             public int Count => _tree.Count;
@@ -858,11 +822,15 @@ namespace DataStructures
                 {
                     throw new ArgumentException(nameof(index));
                 }
-                _tree.InOrderTreeWalk(node =>
+                var node = _tree.First;
+                if (node != null)
                 {
-                    array[index++] = node.Key;
-                    return true;
-                });
+                    do
+                    {
+                        array[index++] = node.Key;
+                        node = node.Next;
+                    } while (node != _tree.First);
+                }
             }
 
             public bool Remove(TKey item)
@@ -872,17 +840,17 @@ namespace DataStructures
 
             public KeyEnumerator GetEnumerator()
             {
-                return new KeyEnumerator(_tree.Head);
+                return new KeyEnumerator(_tree);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return new KeyEnumerator(_tree.Head);
+                return new KeyEnumerator(_tree);
             }
 
             IEnumerator<TKey> IEnumerable<TKey>.GetEnumerator()
             {
-                return new KeyEnumerator(_tree.Head);
+                return new KeyEnumerator(_tree);
             }
 
             public struct KeyEnumerator: IEnumerator<TKey>
@@ -892,10 +860,10 @@ namespace DataStructures
                 private TKey _current;
                 private bool _hasValue;
 
-                internal KeyEnumerator(Node head)
+                internal KeyEnumerator(AvlTreeList<TKey, TValue> tree)
                 {
-                    _head = head;
-                    _node = head;
+                    _head = tree.First;
+                    _node = tree.First;
                     _current = default;
                     _hasValue = false;
                 }
@@ -910,7 +878,7 @@ namespace DataStructures
                     _current = _node.Key;
                     _node = _node.Next;
                     _hasValue = true;
-                    if (ReferenceEquals(_node, _head))
+                    if (_node == _head)
                     {
                         _node = null;
                     }
@@ -950,7 +918,7 @@ namespace DataStructures
 
             public ValueCollection(AvlTreeList<TKey, TValue> tree)
             {
-                _tree = tree;
+                _tree = tree ?? throw new ArgumentNullException(nameof(tree));
             }
 
             public int Count => _tree.Count;
@@ -986,11 +954,15 @@ namespace DataStructures
                 {
                     throw new ArgumentException(nameof(index));
                 }
-                _tree.InOrderTreeWalk(node =>
+                var node = _tree.First;
+                if (node != null)
                 {
-                    array[index++] = node.Value;
-                    return true;
-                });
+                    do
+                    {
+                        array[index++] = node.Value;
+                        node = node.Next;
+                    } while (node != _tree.First);
+                }
             }
 
             public bool Remove(TValue item)
@@ -1000,17 +972,17 @@ namespace DataStructures
 
             public ValueEnumerator GetEnumerator()
             {
-                return new ValueEnumerator(_tree.Head);
+                return new ValueEnumerator(_tree);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return new ValueEnumerator(_tree.Head);
+                return new ValueEnumerator(_tree);
             }
 
             IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
             {
-                return new ValueEnumerator(_tree.Head);
+                return new ValueEnumerator(_tree);
             }
 
             public struct ValueEnumerator: IEnumerator<TValue>
@@ -1020,10 +992,10 @@ namespace DataStructures
                 private TValue _current;
                 private bool _hasValue;
 
-                internal ValueEnumerator(Node head)
+                internal ValueEnumerator(AvlTreeList<TKey, TValue> tree)
                 {
-                    _head = head;
-                    _node = head;
+                    _head = tree.First;
+                    _node = tree.First;
                     _current = default;
                     _hasValue = false;
                 }
@@ -1038,7 +1010,7 @@ namespace DataStructures
                     _current = _node.Value;
                     _node = _node.Next;
                     _hasValue = true;
-                    if (ReferenceEquals(_node, _head))
+                    if (_node == _head)
                     {
                         _node = null;
                     }
