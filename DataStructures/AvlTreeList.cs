@@ -183,6 +183,10 @@ namespace DataStructures
                         current.Prev.Next = left;
                         current.Prev = left;
                         current.Left = left;
+                        if (current == _head)
+                        {
+                            _head = left;
+                        }
                         node = left;
                         InsertBalance(current, 1);
                         _count++;
@@ -346,10 +350,11 @@ namespace DataStructures
                     DeleteBalance(successorParent, -1);
                 }
             }
-            if (_head != null)
+            node.Next.Prev = node.Prev;
+            node.Prev.Next = node.Next;
+            if (_head == node)
             {
-                node.Next.Prev = node.Prev;
-                node.Prev.Next = node.Next;
+                _head = node.Next;
             }
             _count--;
         }
