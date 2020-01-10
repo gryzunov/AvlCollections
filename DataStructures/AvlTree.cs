@@ -669,47 +669,13 @@ namespace DataStructures
             {
                 return;
             }
-            Node current = null;
-            var right = _root;
-            var action = Action.Right;
-            while (true)
+            var walker = new TreeWalker(_root);
+            while (walker.MoveNext())
             {
-                switch (action)
+                var node = walker.Current;
+                if (!callback(node))
                 {
-                    case Action.Right:
-                        current = right;
-                        Debug.Assert(current != null, "current != null");
-                        while (current.Left != null)
-                        {
-                            current = current.Left;
-                        }
-                        right = current.Right;
-                        action = right != null ? Action.Right : Action.Parent;
-                        if (!callback(current))
-                        {
-                            return;
-                        }
-                        break;
-                    case Action.Parent:
-                        Debug.Assert(current != null, "current != null");
-                        if (current.Parent == null)
-                        {
-                            return;
-                        }
-                        var previous = current;
-                        current = current.Parent;
-                        if (current.Left == previous)
-                        {
-                            right = current.Right;
-                            action = right != null ? Action.Right : Action.Parent;
-                            if (!callback(current))
-                            {
-                                return;
-                            }
-                        }
-                        break;
-                    default:
-                        return;
+                    return;
                 }
             }
         }
@@ -781,19 +747,19 @@ namespace DataStructures
             public int Balance { get; internal set; }
         }
 
-        public struct Enumerator: IEnumerator<KeyValuePair<TKey, TValue>>
+        private struct TreeWalker
         {
             private readonly Node _root;
             private Node _current;
             private Node _right;
             private Action _action;
 
-            public Enumerator(Node root)
+            public TreeWalker(Node root)
             {
                 _root = root;
                 _right = root;
                 _current = null;
-                _action = _root == null ? Action.End : Action.Right;
+                _action = _root == null ? Action.Stop : Action.Right;
             }
 
             public bool MoveNext()
@@ -821,20 +787,62 @@ namespace DataStructures
                                 return true;
                             }
                         }
-                        _action = Action.End;
+                        _action = Action.Stop;
+                        _current = null;
                         return false;
                     default:
                         return false;
                 }
             }
 
+            public Node Current => _current;
+
             public void Reset()
             {
                 _right = _root;
-                _action = _root == null ? Action.End : Action.Right;
+                _current = null;
+                _action = _root == null ? Action.Stop : Action.Right;
             }
 
-            public KeyValuePair<TKey, TValue> Current => new KeyValuePair<TKey, TValue>(_current.Key, _current.Value);
+            private enum Action
+            {
+                Parent,
+                Right,
+                Stop
+            }
+        }
+
+        public struct Enumerator: IEnumerator<KeyValuePair<TKey, TValue>>
+        {
+            private TreeWalker _walker;
+
+            public Enumerator(Node root)
+            {
+                _walker = new TreeWalker(root);
+            }
+
+            public bool MoveNext()
+            {
+                return _walker.MoveNext();
+            }
+
+            public void Reset()
+            {
+                _walker.Reset();
+            }
+
+            public KeyValuePair<TKey, TValue> Current
+            {
+                get
+                {
+                    var current = _walker.Current;
+                    if (current == null)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    return new KeyValuePair<TKey, TValue>(current.Key, current.Value);
+                }
+            }
 
             object IEnumerator.Current => Current;
 
@@ -914,58 +922,35 @@ namespace DataStructures
 
             public struct KeyEnumerator: IEnumerator<TKey>
             {
-                private readonly Node _root;
-                private Node _current;
-                private Node _right;
-                private Action _action;
+                private TreeWalker _walker;
 
                 public KeyEnumerator(Node root)
                 {
-                    _root = root;
-                    _right = root;
-                    _current = null;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _walker = new TreeWalker(root);
                 }
 
                 public bool MoveNext()
                 {
-                    switch (_action)
-                    {
-                        case Action.Right:
-                            _current = _right;
-                            while (_current.Left != null)
-                            {
-                                _current = _current.Left;
-                            }
-                            _right = _current.Right;
-                            _action = _right != null ? Action.Right : Action.Parent;
-                            return true;
-                        case Action.Parent:
-                            while (_current.Parent != null)
-                            {
-                                var previous = _current;
-                                _current = _current.Parent;
-                                if (_current.Left == previous)
-                                {
-                                    _right = _current.Right;
-                                    _action = _right != null ? Action.Right : Action.Parent;
-                                    return true;
-                                }
-                            }
-                            _action = Action.End;
-                            return false;
-                        default:
-                            return false;
-                    }
+                    return _walker.MoveNext();
                 }
 
                 public void Reset()
                 {
-                    _right = _root;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _walker.Reset();
                 }
 
-                public TKey Current => _current.Key;
+                public TKey Current
+                {
+                    get
+                    {
+                        var current = _walker.Current;
+                        if (current == null)
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        return current.Key;
+                    }
+                }
 
                 object IEnumerator.Current => Current;
 
@@ -1046,58 +1031,35 @@ namespace DataStructures
 
             public struct ValueEnumerator: IEnumerator<TValue>
             {
-                private readonly Node _root;
-                private Node _current;
-                private Node _right;
-                private Action _action;
+                private TreeWalker _walker;
 
                 public ValueEnumerator(Node root)
                 {
-                    _root = root;
-                    _right = root;
-                    _current = null;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _walker = new TreeWalker(root);
                 }
 
                 public bool MoveNext()
                 {
-                    switch (_action)
-                    {
-                        case Action.Right:
-                            _current = _right;
-                            while (_current.Left != null)
-                            {
-                                _current = _current.Left;
-                            }
-                            _right = _current.Right;
-                            _action = _right != null ? Action.Right : Action.Parent;
-                            return true;
-                        case Action.Parent:
-                            while (_current.Parent != null)
-                            {
-                                var previous = _current;
-                                _current = _current.Parent;
-                                if (_current.Left == previous)
-                                {
-                                    _right = _current.Right;
-                                    _action = _right != null ? Action.Right : Action.Parent;
-                                    return true;
-                                }
-                            }
-                            _action = Action.End;
-                            return false;
-                        default:
-                            return false;
-                    }
+                    return _walker.MoveNext();
                 }
 
                 public void Reset()
                 {
-                    _right = _root;
-                    _action = _root == null ? Action.End : Action.Right;
+                    _walker.Reset();
                 }
 
-                public TValue Current => _current.Value;
+                public TValue Current
+                {
+                    get
+                    {
+                        var current = _walker.Current;
+                        if (current == null)
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        return current.Value;
+                    }
+                }
 
                 object IEnumerator.Current => Current;
 
@@ -1105,13 +1067,6 @@ namespace DataStructures
                 {
                 }
             }
-        }
-
-        private enum Action
-        {
-            Parent,
-            Right,
-            End
         }
     }
 }
