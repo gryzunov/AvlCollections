@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace DataStructures
 {
@@ -67,7 +66,7 @@ namespace DataStructures
                 value = node.Value;
                 return true;
             }
-            value = default(TValue);
+            value = default;
             return false;
         }
 
@@ -79,33 +78,17 @@ namespace DataStructures
 
         public bool ContainsValue(TValue value)
         {
-            var found = false;
-            if (value == null)
+            var comparer = EqualityComparer<TValue>.Default;
+            var walker = new TreeWalker(_root);
+            while (walker.MoveNext())
             {
-                InOrderTreeWalk(node =>
+                var node = walker.Current;
+                if (comparer.Equals(node.Value, value))
                 {
-                    if (node.Value == null)
-                    {
-                        found = true;
-                        return false; // stop tree walk
-                    }
                     return true;
-                });
+                }
             }
-            else
-            {
-                var comparer = EqualityComparer<TValue>.Default;
-                InOrderTreeWalk(node =>
-                {
-                    if (comparer.Equals(node.Value, value))
-                    {
-                        found = true;
-                        return false; // stop tree walk
-                    }
-                    return true;
-                });
-            }
-            return found;
+            return false;
         }
 
         public bool Add(TKey key, TValue value)
@@ -663,23 +646,6 @@ namespace DataStructures
             return new Enumerator(_root);
         }
 
-        private void InOrderTreeWalk(Func<Node, bool> callback)
-        {
-            if (_root == null)
-            {
-                return;
-            }
-            var walker = new TreeWalker(_root);
-            while (walker.MoveNext())
-            {
-                var node = walker.Current;
-                if (!callback(node))
-                {
-                    return;
-                }
-            }
-        }
-
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             Add(key, value);
@@ -714,11 +680,12 @@ namespace DataStructures
             {
                 throw new ArgumentException(nameof(index));
             }
-            InOrderTreeWalk(node =>
+            var walker = new TreeWalker(_root);
+            while (walker.MoveNext())
             {
+                var node = walker.Current;
                 array[index++] = new KeyValuePair<TKey, TValue>(node.Key, node.Value);
-                return true;
-            });
+            }
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -893,11 +860,12 @@ namespace DataStructures
                 {
                     throw new ArgumentException(nameof(index));
                 }
-                _tree.InOrderTreeWalk(node =>
+                var walker = new TreeWalker(_tree.Root);
+                while (walker.MoveNext())
                 {
+                    var node = walker.Current;
                     array[index++] = node.Key;
-                    return true;
-                });
+                }
             }
 
             public bool Remove(TKey item)
@@ -1002,11 +970,12 @@ namespace DataStructures
                 {
                     throw new ArgumentException(nameof(index));
                 }
-                _tree.InOrderTreeWalk(node =>
+                var walker = new TreeWalker(_tree.Root);
+                while (walker.MoveNext())
                 {
+                    var node = walker.Current;
                     array[index++] = node.Value;
-                    return true;
-                });
+                }
             }
 
             public bool Remove(TValue item)
