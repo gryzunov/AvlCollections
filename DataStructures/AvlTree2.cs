@@ -74,7 +74,8 @@ namespace DataStructures
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Direction GetDirection(int value)
         {
-            return (Direction) (int) (((uint) -value >> 31) - ((uint) value >> 31));
+            // effectively does sign(value) and cast to Direction.
+            return (Direction) unchecked(value >> 31 | (int) ((uint) -value >> 31));
         }
 
         private bool InternalRemove(ref Node root, T value)
