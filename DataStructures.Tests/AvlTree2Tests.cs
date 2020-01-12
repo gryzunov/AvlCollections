@@ -8,11 +8,11 @@ namespace DataStructures.Tests
         public void TestInsert()
         {
             var tree = new AvlTree2<int>();
-            tree.Insert(30);
-            tree.Insert(10);
-            tree.Insert(40);
-            tree.Insert(20);
-            tree.Insert(50);
+            tree.Add(30);
+            tree.Add(10);
+            tree.Add(40);
+            tree.Add(20);
+            tree.Add(50);
         }
     }
 }
