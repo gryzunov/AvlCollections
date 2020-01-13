@@ -28,22 +28,33 @@ namespace DataStructures.Benchmark
         [Benchmark]
         public void TestAvl()
         {
-            var tree = new AvlTreeDictionary<int, int>();
+            var tree = new AvlTree<int>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var n = _data[i];
-                tree.Add(n, n);
+                tree.Add(n);
+            }
+        }
+
+        [Benchmark]
+        public void TestAvl2()
+        {
+            var tree = new AvlTree2<int>();
+            for (int i = 0; i < _data.Length; i++)
+            {
+                var n = _data[i];
+                tree.Add(n);
             }
         }
 
         [Benchmark]
         public void TestRb()
         {
-            var dic = new CustomSortedDictionary<int, int>();
+            var dic = new SortedSet<int>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var n = _data[i];
-                dic.Add(n, n);
+                dic.Add(n);
             }
         }
 
