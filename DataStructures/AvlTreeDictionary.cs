@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DataStructures
 {
-    public class AvlTree<TKey, TValue>: IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    public class AvlTreeDictionary<TKey, TValue>: IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         private readonly IComparer<TKey> _comparer;
         private Node _root;
@@ -12,12 +12,12 @@ namespace DataStructures
         private ValueCollection _values;
         private int _count;
 
-        public AvlTree(IComparer<TKey> comparer)
+        public AvlTreeDictionary(IComparer<TKey> comparer)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
-        public AvlTree()
+        public AvlTreeDictionary()
             : this(Comparer<TKey>.Default)
         {
         }
@@ -820,9 +820,9 @@ namespace DataStructures
 
         public sealed class KeyCollection: ICollection<TKey>
         {
-            private readonly AvlTree<TKey, TValue> _tree;
+            private readonly AvlTreeDictionary<TKey, TValue> _tree;
 
-            public KeyCollection(AvlTree<TKey, TValue> tree)
+            public KeyCollection(AvlTreeDictionary<TKey, TValue> tree)
             {
                 _tree = tree;
             }
@@ -930,9 +930,9 @@ namespace DataStructures
 
         public sealed class ValueCollection: ICollection<TValue>
         {
-            private readonly AvlTree<TKey, TValue> _tree;
+            private readonly AvlTreeDictionary<TKey, TValue> _tree;
 
-            public ValueCollection(AvlTree<TKey, TValue> tree)
+            public ValueCollection(AvlTreeDictionary<TKey, TValue> tree)
             {
                 _tree = tree;
             }

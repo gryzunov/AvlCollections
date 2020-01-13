@@ -28,7 +28,7 @@ namespace DataStructures.Benchmark
         [Benchmark]
         public void TestAvl()
         {
-            var tree = new AvlTree<int, int>();
+            var tree = new AvlTreeDictionary<int, int>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var n = _data[i];
