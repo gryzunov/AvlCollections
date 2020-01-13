@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace DataStructures.Benchmark
 {
+    [MemoryDiagnoser]
     [LegacyJitX86Job, RyuJitX64Job]
     public class AvlTreeVsRBTreeInsertRandom
     {
