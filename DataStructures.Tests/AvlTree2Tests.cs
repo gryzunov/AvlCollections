@@ -7,7 +7,7 @@ namespace DataStructures.Tests
         [Fact]
         public void TestInsert()
         {
-            var tree = new AvlTree2<int>();
+            var tree = new CompactAvlTree<int>();
             Assert.True(tree.Add(30));
             Assert.True(tree.Add(10));
             Assert.True(tree.Add(40));
@@ -18,7 +18,7 @@ namespace DataStructures.Tests
         [Fact]
         public void TestDelete()
         {
-            var tree = new AvlTree2<int>();
+            var tree = new CompactAvlTree<int>();
             tree.Add(30);
             tree.Add(10);
             tree.Add(40);

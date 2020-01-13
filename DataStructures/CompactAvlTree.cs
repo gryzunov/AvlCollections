@@ -7,18 +7,18 @@ namespace DataStructures
     /// <summary>
     /// Avl Tree with parentless node
     /// </summary>
-    public class AvlTree2<T>
+    public class CompactAvlTree<T>
     {
         private static Node _dummyNode = null;
         private readonly IComparer<T> _comparer;
         private Node _root;
 
-        public AvlTree2()
+        public CompactAvlTree()
         {
             _comparer = Comparer<T>.Default;
         }
 
-        public AvlTree2(IComparer<T> comparer)
+        public CompactAvlTree(IComparer<T> comparer)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }

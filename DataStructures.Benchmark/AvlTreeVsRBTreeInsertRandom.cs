@@ -40,7 +40,7 @@ namespace DataStructures.Benchmark
         [Benchmark]
         public void TestAvl2()
         {
-            var tree = new AvlTree2<int>();
+            var tree = new CompactAvlTree<int>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var n = _data[i];
