@@ -9,6 +9,7 @@ namespace DataStructures
     /// </summary>
     public class AvlTree2<T>
     {
+        private static Node _dummyNode = null;
         private readonly IComparer<T> _comparer;
         private Node _root;
 
@@ -47,27 +48,27 @@ namespace DataStructures
             return false;
         }
 
-        private bool InternalAdd(ref Node root, T value)
+        private bool InternalAdd(ref Node treeRef, T value)
         {
-            var node = root;
-            ref var parent = ref root;
-            while (node != null)
+            var tree = treeRef;
+            ref var pathTopRef = ref treeRef;
+            while (tree != null)
             {
-                var compare = _comparer.Compare(value, node.Value);
+                var compare = _comparer.Compare(value, tree.Value);
                 if (compare == 0)
                 {
                     return false;
                 }
-                if (!node.IsBalanced)
+                if (!tree.IsBalanced)
                 {
-                    parent = ref root;
+                    pathTopRef = ref treeRef;
                 }
-                root = ref compare > 0 ? ref node.Right : ref node.Left;
-                node = root;
+                treeRef = ref compare > 0 ? ref tree.Right : ref tree.Left;
+                tree = treeRef;
             }
-            node = new Node { Value = value, Longer = Direction.None };
-            root = node;
-            RebalanceInsert(ref parent, value);
+            tree = new Node { Value = value, Longer = Direction.None };
+            treeRef = tree;
+            RebalanceInsert(ref pathTopRef, value);
             return true;
         }
 
@@ -78,71 +79,78 @@ namespace DataStructures
             return (Direction) unchecked(value >> 31 | (int) ((uint) -value >> 31));
         }
 
-        private bool InternalRemove(ref Node root, T value)
+        private bool InternalRemove(ref Node treeRef, T value)
         {
-            Node target = null;
-            ref var parent = ref root;
-            ref var tree = ref root;
+            ref var targetRef = ref _dummyNode;
+            ref var pathTopRef = ref treeRef;
             var dir = Direction.None;
-            var node = tree;
-            while (node != null)
+            var tree = treeRef;
+            while (tree != null)
             {
-                var compare = _comparer.Compare(value, node.Value);
+                var compare = _comparer.Compare(value, tree.Value);
                 if (compare == 0)
                 {
-                    target = tree;
+                    targetRef = ref treeRef;
                 }
                 if (compare > 0)
                 {
                     dir = Direction.Right;
-                    if (node.Right == null)
+                    if (tree.Right == null)
                     {
                         break;
                     }
-                    if (node.IsBalanced || (node.Longer == Direction.Left && node.Left.IsBalanced))
+                    if (tree.IsBalanced || (tree.Longer == Direction.Left && tree.Left.IsBalanced))
                     {
-                        parent = ref tree;
+                        pathTopRef = ref treeRef;
                     }
-                    tree = ref node.Right;
+                    treeRef = ref tree.Right;
                 }
                 else
                 {
                     dir = Direction.Left;
-                    if (node.Left == null)
+                    if (tree.Left == null)
                     {
                         break;
                     }
-                    if (node.IsBalanced || (node.Longer == Direction.Right && node.Right.IsBalanced))
+                    if (tree.IsBalanced || (tree.Longer == Direction.Right && tree.Right.IsBalanced))
                     {
-                        parent = ref tree;
+                        pathTopRef = ref treeRef;
                     }
-                    tree = ref node.Left;
+                    treeRef = ref tree.Left;
                 }
-                node = tree;
+                tree = treeRef;
             }
-            if (target == null)
+            if (targetRef == null)
             {
                 return false;
             }
-            var (n, d) = RebalanceDelete(ref parent, target, value);
-            if (d == Direction.Left)
+            var (n, d) = RebalanceDelete(ref pathTopRef, targetRef, value);
+            if (d == Direction.Right)
             {
-                SwapDelete(ref n.Left, ref root, dir);
+                SwapDelete(ref n.Right, ref treeRef, dir);
+            }
+            else if (d == Direction.Left)
+            {
+                SwapDelete(ref n.Left, ref treeRef, dir);
+            }
+            else
+            {
+                SwapDelete(ref targetRef, ref treeRef, dir);
             }
             return true;
         }
 
-        private (Node, Direction) RebalanceDelete(ref Node root, Node target, T value)
+        private (Node, Direction) RebalanceDelete(ref Node treeRef, Node target, T value)
         {
             var targetNode = target;
             var targetDir = Direction.None;
             while (true)
             {
-                var node = root;
+                var tree = treeRef;
                 Direction dir;
-                if (_comparer.Compare(value, node.Value) > 0)
+                if (_comparer.Compare(value, tree.Value) > 0)
                 {
-                    if (node.Right == null)
+                    if (tree.Right == null)
                     {
                         break;
                     }
@@ -150,65 +158,65 @@ namespace DataStructures
                 }
                 else
                 {
-                    if (node.Left == null)
+                    if (tree.Left == null)
                     {
                         break;
                     }
                     dir = Direction.Left;
                 }
                 var oppositeDir = (Direction) (-(int) dir);
-                if (node.IsBalanced)
+                if (tree.IsBalanced)
                 {
-                    node.Longer = oppositeDir;
+                    tree.Longer = oppositeDir;
                 }
-                else if (node.Longer == dir)
+                else if (tree.Longer == dir)
                 {
-                    node.Longer = Direction.None;
+                    tree.Longer = Direction.None;
                 }
                 else
                 {
-                    var second = dir > 0 ? node.Left.Longer : node.Right.Longer;
+                    var second = dir > 0 ? tree.Left.Longer : tree.Right.Longer;
                     if (second == dir)
                     {
-                        var third = dir > 0 ? node.Left.Right.Longer : node.Right.Left.Longer;
-                        Rotate3(ref root, oppositeDir, third);
+                        var third = dir > 0 ? tree.Left.Right.Longer : tree.Right.Left.Longer;
+                        Rotate3(ref treeRef, oppositeDir, third);
                     }
                     else if (second == Direction.None)
                     {
-                        Rotate2(ref root, oppositeDir);
-                        node.Longer = oppositeDir;
-                        root.Longer = dir;
+                        Rotate2(ref treeRef, oppositeDir);
+                        tree.Longer = oppositeDir;
+                        treeRef.Longer = dir;
                     }
                     else
                     {
-                        Rotate2(ref root, oppositeDir);
+                        Rotate2(ref treeRef, oppositeDir);
                     }
-                    if (node == targetNode)
+                    if (tree == targetNode)
                     {
-                        target = root;
+                        target = treeRef;
                         targetDir = dir;
                     }
                 }
-                root = ref dir > 0 ? ref node.Right : ref node.Left;
+                treeRef = ref dir > 0 ? ref tree.Right : ref tree.Left;
             }
             return (target, targetDir);
         }
 
-        private static void SwapDelete(ref Node target, ref Node tree, Direction dir)
+        private static void SwapDelete(ref Node targetRef, ref Node treeRef, Direction dir)
         {
-            var targetNode = target;
-            var treeNode = tree;
+            var targetNode = targetRef;
+            var treeNode = treeRef;
 
-            target = treeNode;
-            tree = dir > 0 ? treeNode.Left : treeNode.Right;
+            targetRef = treeNode;
+            treeRef = dir > 0 ? treeNode.Left : treeNode.Right;
             treeNode.Left = targetNode.Left;
             treeNode.Right = targetNode.Right;
             treeNode.Longer = targetNode.Longer;
         }
 
-        private void RebalanceInsert(ref Node parent, T value)
+        private void RebalanceInsert(ref Node pathTopRef, T value)
         {
-            var path = parent;
+            var path = pathTopRef;
             Direction first, second;
             if (!path.IsBalanced)
             {
@@ -224,23 +232,23 @@ namespace DataStructures
                     second = GetDirection(_comparer.Compare(value, node.Value));
                     if (first == second)
                     {
-                        path = Rotate2(ref parent, first);
+                        path = Rotate2(ref pathTopRef, first);
                     }
                     else
                     {
                         path = first > 0 ? path.Right : path.Left;
                         path = second > 0 ? path.Right : path.Left;
                         var third = GetDirection(_comparer.Compare(value, path.Value));
-                        path = Rotate3(ref parent, first, third);
+                        path = Rotate3(ref pathTopRef, first, third);
                     }
                 }
             }
             RebalancePath(path, value);
         }
 
-        private static Node Rotate2(ref Node parent, Direction dir)
+        private static Node Rotate2(ref Node pathTopRef, Direction dir)
         {
-            var b = parent;
+            var b = pathTopRef;
 
             Node c, d, e;
             if (dir > 0)
@@ -260,7 +268,7 @@ namespace DataStructures
                 b.Left = c;
             }
 
-            parent = d;
+            pathTopRef = d;
 
             b.Longer = Direction.None;
             d.Longer = Direction.None;
@@ -268,9 +276,9 @@ namespace DataStructures
             return e;
         }
 
-        private static Node Rotate3(ref Node parent, Direction dir, Direction third)
+        private static Node Rotate3(ref Node pathTopRef, Direction dir, Direction third)
         {
-            var b = parent;
+            var b = pathTopRef;
 
             Node c, d, e, f;
             if (dir > 0)
@@ -298,7 +306,7 @@ namespace DataStructures
                 f.Right = e;
             }
 
-            parent = d;
+            pathTopRef = d;
 
             d.Longer = Direction.None;
             b.Longer = Direction.None;
