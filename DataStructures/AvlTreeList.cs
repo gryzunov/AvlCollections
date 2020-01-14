@@ -29,10 +29,9 @@ namespace DataStructures
 
         public bool IsReadOnly => false;
 
-        public Node Add(T item)
+        public void Add(T item)
         {
-            _ = FindOrCreateNode(item, out var node);
-            return node;
+            _ = FindOrCreateNode(item, out var _);
         }
 
         public bool Remove(T item)
@@ -569,11 +568,6 @@ namespace DataStructures
         public Enumerator GetEnumerator()
         {
             return new Enumerator(_head);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            _ = Add(item);
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()

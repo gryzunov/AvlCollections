@@ -42,14 +42,12 @@ namespace DataStructures.Tests
         [Fact]
         public void TestListWithSingleItem()
         {
-            var tree = new AvlTreeList<int>();
-            var addedNode = tree.Add(1);
-            Assert.NotNull(addedNode);
+            var tree = new AvlTreeList<int> { 1 };
+            Assert.Single(tree);
             _ = Assert.Single(tree);
             Assert.NotNull(tree.First);
             Assert.NotNull(tree.Last);
             Assert.Same(tree.First, tree.Last);
-            Assert.Same(addedNode, tree.Last);
         }
 
         [Fact]
