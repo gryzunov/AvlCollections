@@ -4,23 +4,21 @@ using System.Collections.Generic;
 
 namespace DataStructures
 {
-    public class AvlTreeList<TKey, TValue>: IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    public class AvlTreeList<T>: ICollection<T>, IReadOnlyCollection<T>
     {
-        private readonly IComparer<TKey> _comparer;
+        private readonly IComparer<T> _comparer;
         private Node _root;
         private Node _head;
-        private KeyCollection _keys;
-        private ValueCollection _values;
         private int _count;
 
-        public AvlTreeList(IComparer<TKey> comparer)
+        public AvlTreeList(IComparer<T> comparer)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
         public AvlTreeList()
-            : this(Comparer<TKey>.Default)
         {
+            _comparer = Comparer<T>.Default;
         }
 
         public int Count => _count;
@@ -29,104 +27,29 @@ namespace DataStructures
 
         public Node Last => _head?.Prev;
 
-        public KeyCollection Keys => _keys ?? (_keys = new KeyCollection(this));
-
-        public ValueCollection Values => _values ?? (_values = new ValueCollection(this));
-
         public bool IsReadOnly => false;
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
-
-        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
-
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
-
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
-
-        public TValue this[TKey key]
+        public Node Add(T item)
         {
-            get
-            {
-                var node = FindNode(key);
-                if (node == null)
-                {
-                    throw new KeyNotFoundException();
-                }
-                return node.Value;
-            }
-            set
-            {
-                _ = FindOrCreateNode(key, out var node);
-                node.Value = value;
-            }
+            _ = FindOrCreateNode(item, out var node);
+            return node;
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool Remove(T item)
         {
-            var node = FindNode(key);
-            if (node != null)
-            {
-                value = node.Value;
-                return true;
-            }
-            value = default;
-            return false;
-        }
-
-        public bool ContainsKey(TKey key)
-        {
-            var node = FindNode(key);
-            return node != null;
-        }
-
-        public bool ContainsValue(TValue value)
-        {
-            var node = _head;
-            if (node != null)
-            {
-                var comparer = EqualityComparer<TValue>.Default;
-                do
-                {
-                    if (comparer.Equals(node.Value, value))
-                    {
-                        return true;
-                    }
-                    node = node.Next;
-                } while (node != _head);
-            }
-            return false;
-        }
-
-        public bool Add(TKey key, TValue value)
-        {
-            var found = FindOrCreateNode(key, out var node);
-            node.Value = value;
-            return !found;
-        }
-
-        public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
-        {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(valueFactory));
-            }
-            var found = FindOrCreateNode(key, out var node);
-            if (!found)
-            {
-                node.Value = valueFactory(key);
-            }
-            return node.Value;
-        }
-
-        public bool Remove(TKey key)
-        {
-            var node = FindNode(key);
+            var node = FindNode(item);
             if (node != null)
             {
                 InternalRemoveNode(node);
                 return true;
             }
             return false;
+        }
+
+        public bool Contains(T item)
+        {
+            var node = FindNode(item);
+            return node != null;
         }
 
         public void Clear()
@@ -136,16 +59,16 @@ namespace DataStructures
             _count = 0;
         }
 
-        public Node FindNode(TKey key)
+        public Node FindNode(T item)
         {
-            if (key == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(key));
+                throw new ArgumentNullException(nameof(item));
             }
             var node = _root;
             while (node != null)
             {
-                var compare = _comparer.Compare(key, node.Key);
+                var compare = _comparer.Compare(item, node.Item);
                 if (compare < 0)
                 {
                     node = node.Left;
@@ -162,21 +85,21 @@ namespace DataStructures
             return null;
         }
 
-        public bool FindOrCreateNode(TKey key, out Node node)
+        public bool FindOrCreateNode(T item, out Node node)
         {
-            if (key == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(key));
+                throw new ArgumentNullException(nameof(item));
             }
             var current = _root;
             while (current != null)
             {
-                int compare = _comparer.Compare(key, current.Key);
+                int compare = _comparer.Compare(item, current.Item);
                 if (compare < 0)
                 {
                     if (current.Left == null)
                     {
-                        var left = new Node { Key = key, Parent = current };
+                        var left = new Node { Item = item, Parent = current };
                         // node should be inserted BEFORE current.
                         left.Next = current;
                         left.Prev = current.Prev;
@@ -198,7 +121,7 @@ namespace DataStructures
                 {
                     if (current.Right == null)
                     {
-                        var right = new Node { Key = key, Parent = current };
+                        var right = new Node { Item = item, Parent = current };
                         // node should be inserted AFTER current.
                         right.Prev = current;
                         right.Next = current.Next;
@@ -218,7 +141,7 @@ namespace DataStructures
                     return true;
                 }
             }
-            var newNode = new Node { Key = key };
+            var newNode = new Node { Item = item };
             newNode.Next = newNode;
             newNode.Prev = newNode;
             _root = newNode;
@@ -629,8 +552,7 @@ namespace DataStructures
             var right = source.Right;
 
             target.Balance = source.Balance;
-            target.Key = source.Key;
-            target.Value = source.Value;
+            target.Item = source.Item;
             target.Left = left;
             target.Right = right;
 
@@ -649,32 +571,22 @@ namespace DataStructures
             return new Enumerator(_head);
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            _ = Add(item);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Enumerator(_head);
+            return GetEnumerator();
         }
 
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            _ = Add(key, value);
-        }
-
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            _ = Add(item.Key, item.Value);
-        }
-
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            var node = FindNode(item.Key);
-            if (node != null && EqualityComparer<TValue>.Default.Equals(item.Value, node.Value))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int index)
+        public void CopyTo(T[] array, int index)
         {
             if (array == null)
             {
@@ -693,26 +605,10 @@ namespace DataStructures
             {
                 do
                 {
-                    array[index++] = new KeyValuePair<TKey, TValue>(node.Key, node.Value);
+                    array[index++] = node.Item;
                     node = node.Next;
                 } while (node != _head);
             }
-        }
-
-        public bool Remove(KeyValuePair<TKey, TValue> item)
-        {
-            var node = FindNode(item.Key);
-            if (node != null && EqualityComparer<TValue>.Default.Equals(item.Value, node.Value))
-            {
-                InternalRemoveNode(node);
-                return true;
-            }
-            return false;
-        }
-
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
-        {
-            return new Enumerator(_head);
         }
 
         public sealed class Node
@@ -722,16 +618,15 @@ namespace DataStructures
             public Node Right { get; internal set; }
             public Node Prev { get; internal set; }
             public Node Next { get; internal set; }
-            public TKey Key { get; internal set; }
-            public TValue Value { get; internal set; }
+            public T Item { get; internal set; }
             public int Balance { get; internal set; }
         }
 
-        public struct Enumerator: IEnumerator<KeyValuePair<TKey, TValue>>
+        public struct Enumerator: IEnumerator<T>
         {
             private readonly Node _head;
             private Node _node;
-            private KeyValuePair<TKey, TValue> _current;
+            private T _current;
             private bool _hasValue;
 
             internal Enumerator(Node head)
@@ -749,7 +644,7 @@ namespace DataStructures
                     _hasValue = false;
                     return false;
                 }
-                _current = new KeyValuePair<TKey, TValue>(_node.Key, _node.Value);
+                _current = _node.Item;
                 _node = _node.Next;
                 _hasValue = true;
                 if (_node == _head)
@@ -766,7 +661,7 @@ namespace DataStructures
                 _hasValue = false;
             }
 
-            public KeyValuePair<TKey, TValue> Current
+            public T Current
             {
                 get
                 {
@@ -782,270 +677,6 @@ namespace DataStructures
 
             public void Dispose()
             {
-            }
-        }
-
-        public sealed class KeyCollection: ICollection<TKey>
-        {
-            private readonly AvlTreeList<TKey, TValue> _tree;
-
-            public KeyCollection(AvlTreeList<TKey, TValue> tree)
-            {
-                _tree = tree ?? throw new ArgumentNullException(nameof(tree));
-            }
-
-            public int Count => _tree.Count;
-
-            public bool IsReadOnly => true;
-
-            public void Add(TKey item)
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Clear()
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool Contains(TKey item)
-            {
-                return _tree.ContainsKey(item);
-            }
-
-            public void CopyTo(TKey[] array, int index)
-            {
-                if (array == null)
-                {
-                    throw new ArgumentNullException(nameof(array));
-                }
-                if (index < 0 || index > array.Length)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index));
-                }
-                if (array.Length - index < _tree.Count)
-                {
-                    throw new ArgumentException(nameof(index));
-                }
-                var node = _tree.First;
-                if (node != null)
-                {
-                    do
-                    {
-                        array[index++] = node.Key;
-                        node = node.Next;
-                    } while (node != _tree.First);
-                }
-            }
-
-            public bool Remove(TKey item)
-            {
-                throw new NotSupportedException();
-            }
-
-            public KeyEnumerator GetEnumerator()
-            {
-                return new KeyEnumerator(_tree);
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return new KeyEnumerator(_tree);
-            }
-
-            IEnumerator<TKey> IEnumerable<TKey>.GetEnumerator()
-            {
-                return new KeyEnumerator(_tree);
-            }
-
-            public struct KeyEnumerator: IEnumerator<TKey>
-            {
-                private readonly Node _head;
-                private Node _node;
-                private TKey _current;
-                private bool _hasValue;
-
-                internal KeyEnumerator(AvlTreeList<TKey, TValue> tree)
-                {
-                    _head = tree.First;
-                    _node = tree.First;
-                    _current = default;
-                    _hasValue = false;
-                }
-
-                public bool MoveNext()
-                {
-                    if (_node == null)
-                    {
-                        _hasValue = false;
-                        return false;
-                    }
-                    _current = _node.Key;
-                    _node = _node.Next;
-                    _hasValue = true;
-                    if (_node == _head)
-                    {
-                        _node = null;
-                    }
-                    return true;
-                }
-
-                public void Reset()
-                {
-                    _node = _head;
-                    _current = default;
-                    _hasValue = false;
-                }
-
-                public TKey Current
-                {
-                    get
-                    {
-                        if (!_hasValue)
-                        {
-                            throw new InvalidOperationException();
-                        }
-                        return _current;
-                    }
-                }
-
-                object IEnumerator.Current => Current;
-
-                public void Dispose()
-                {
-                }
-            }
-        }
-
-        public sealed class ValueCollection: ICollection<TValue>
-        {
-            private readonly AvlTreeList<TKey, TValue> _tree;
-
-            public ValueCollection(AvlTreeList<TKey, TValue> tree)
-            {
-                _tree = tree ?? throw new ArgumentNullException(nameof(tree));
-            }
-
-            public int Count => _tree.Count;
-
-            public bool IsReadOnly => true;
-
-            public void Add(TValue item)
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Clear()
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool Contains(TValue item)
-            {
-                return _tree.ContainsValue(item);
-            }
-
-            public void CopyTo(TValue[] array, int index)
-            {
-                if (array == null)
-                {
-                    throw new ArgumentNullException(nameof(array));
-                }
-                if (index < 0 || index > array.Length)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index));
-                }
-                if (array.Length - index < _tree.Count)
-                {
-                    throw new ArgumentException(nameof(index));
-                }
-                var node = _tree.First;
-                if (node != null)
-                {
-                    do
-                    {
-                        array[index++] = node.Value;
-                        node = node.Next;
-                    } while (node != _tree.First);
-                }
-            }
-
-            public bool Remove(TValue item)
-            {
-                throw new NotSupportedException();
-            }
-
-            public ValueEnumerator GetEnumerator()
-            {
-                return new ValueEnumerator(_tree);
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return new ValueEnumerator(_tree);
-            }
-
-            IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
-            {
-                return new ValueEnumerator(_tree);
-            }
-
-            public struct ValueEnumerator: IEnumerator<TValue>
-            {
-                private readonly Node _head;
-                private Node _node;
-                private TValue _current;
-                private bool _hasValue;
-
-                internal ValueEnumerator(AvlTreeList<TKey, TValue> tree)
-                {
-                    _head = tree.First;
-                    _node = tree.First;
-                    _current = default;
-                    _hasValue = false;
-                }
-
-                public bool MoveNext()
-                {
-                    if (_node == null)
-                    {
-                        _hasValue = false;
-                        return false;
-                    }
-                    _current = _node.Value;
-                    _node = _node.Next;
-                    _hasValue = true;
-                    if (_node == _head)
-                    {
-                        _node = null;
-                    }
-                    return true;
-                }
-
-                public void Reset()
-                {
-                    _node = _head;
-                    _current = default;
-                    _hasValue = false;
-                }
-
-                public TValue Current
-                {
-                    get
-                    {
-                        if (!_hasValue)
-                        {
-                            throw new InvalidOperationException();
-                        }
-                        return _current;
-                    }
-                }
-
-                object IEnumerator.Current => Current;
-
-                public void Dispose()
-                {
-                }
             }
         }
     }

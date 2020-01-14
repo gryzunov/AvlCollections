@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace DataStructures.Tests
@@ -34,7 +33,7 @@ namespace DataStructures.Tests
         [Fact]
         public void TestEmptyList()
         {
-            var tree = new AvlTreeList<int, int>();
+            var tree = new AvlTreeList<int>();
             Assert.Empty(tree);
             Assert.Null(tree.First);
             Assert.Null(tree.Last);
@@ -43,36 +42,34 @@ namespace DataStructures.Tests
         [Fact]
         public void TestListWithSingleItem()
         {
-            var tree = new AvlTreeList<int, int>();
-            var added = tree.Add(1, 1);
-            Assert.True(added);
+            var tree = new AvlTreeList<int>();
+            var addedNode = tree.Add(1);
+            Assert.NotNull(addedNode);
             _ = Assert.Single(tree);
             Assert.NotNull(tree.First);
             Assert.NotNull(tree.Last);
             Assert.Same(tree.First, tree.Last);
+            Assert.Same(addedNode, tree.Last);
         }
 
         [Fact]
         public void RandomInsertTest()
         {
-            var tree = new AvlTreeList<int, int>();
+            var tree = new AvlTreeList<int>();
             AddValues(tree);
             Assert.Equal(ItemCount, tree.Count);
-            Assert.Equal(_sortedValues[0], tree.First.Key);
-            Assert.Equal(_sortedValues[ItemCount - 1], tree.Last.Key);
-            Assert.Equal(_sortedValues[1], tree.First.Next.Key);
-            Assert.Equal(_sortedValues[ItemCount - 2], tree.Last.Prev.Key);
-            Assert.Equal(_sortedValues[2], tree.First.Next.Next.Key);
-            Assert.Equal(_sortedValues[ItemCount - 3], tree.Last.Prev.Prev.Key);
+            Assert.Equal(_sortedValues[0], tree.First.Item);
+            Assert.Equal(_sortedValues[ItemCount - 1], tree.Last.Item);
+            Assert.Equal(_sortedValues[1], tree.First.Next.Item);
+            Assert.Equal(_sortedValues[ItemCount - 2], tree.Last.Prev.Item);
+            Assert.Equal(_sortedValues[2], tree.First.Next.Next.Item);
+            Assert.Equal(_sortedValues[ItemCount - 3], tree.Last.Prev.Prev.Item);
         }
 
         [Fact]
         public void RemoveSingleItem()
         {
-            var tree = new AvlTreeList<int, int>()
-            {
-                {1, 1}
-            };
+            var tree = new AvlTreeList<int>() { 1 };
             var removed = tree.Remove(1);
             Assert.True(removed);
             Assert.Empty(tree);
@@ -80,28 +77,12 @@ namespace DataStructures.Tests
             Assert.Null(tree.Last);
         }
 
-        [Fact]
-        public void KeyCollectionEnumeratorTest()
-        {
-            var tree = new AvlTreeList<int, int>();
-            AddValues(tree);
-            Assert.True(_sortedValues.SequenceEqual(tree.Keys));
-        }
-
-        [Fact]
-        public void ValueCollectionEnumeratorTest()
-        {
-            var tree = new AvlTreeList<int, int>();
-            AddValues(tree);
-            Assert.True(_sortedValues.Select(i => i * 2).SequenceEqual(tree.Values));
-        }
-
-        private void AddValues(AvlTreeList<int, int> tree)
+        private void AddValues(AvlTreeList<int> tree)
         {
             for (int i = 0; i < _values.Length; i++)
             {
                 var number = _values[i];
-                tree.Add(number, number * 2);
+                tree.Add(number);
             }
         }
     }
