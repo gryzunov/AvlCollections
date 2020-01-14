@@ -58,7 +58,7 @@ namespace DataStructures
             while (walker.MoveNext())
             {
                 var node = walker.Current;
-                array[index++] = node.Value;
+                array[index++] = node.Item;
             }
         }
 
@@ -88,47 +88,40 @@ namespace DataStructures
             return GetEnumerator();
         }
 
-        public Node FindNode(T value)
+        public Node FindNode(T item)
         {
-            if (value == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentNullException(nameof(item));
             }
             var node = _root;
             while (node != null)
             {
-                var compare = _comparer.Compare(value, node.Value);
+                var compare = _comparer.Compare(item, node.Item);
                 if (compare == 0)
                 {
                     return node;
                 }
-                if (compare < 0)
-                {
-                    node = node.Left;
-                }
-                else
-                {
-                    node = node.Right;
-                }
+                node = compare < 0 ? node.Left : node.Right;
             }
             return null;
         }
 
-        public bool FindOrCreateNode(T value, out Node node)
+        public bool FindOrCreateNode(T item, out Node node)
         {
-            if (value == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentNullException(nameof(item));
             }
             var current = _root;
             while (current != null)
             {
-                int compare = _comparer.Compare(value, current.Value);
+                int compare = _comparer.Compare(item, current.Item);
                 if (compare < 0)
                 {
                     if (current.Left == null)
                     {
-                        current.Left = new Node { Value = value, Parent = current };
+                        current.Left = new Node { Item = item, Parent = current };
                         node = current.Left;
                         InsertBalance(current, 1);
                         _count++;
@@ -140,7 +133,7 @@ namespace DataStructures
                 {
                     if (current.Right == null)
                     {
-                        current.Right = new Node { Value = value, Parent = current };
+                        current.Right = new Node { Item = item, Parent = current };
                         node = current.Right;
                         InsertBalance(current, -1);
                         _count++;
@@ -154,7 +147,7 @@ namespace DataStructures
                     return true;
                 }
             }
-            _root = new Node { Value = value };
+            _root = new Node { Item = item };
             node = _root;
             _count++;
             return false;
@@ -543,7 +536,7 @@ namespace DataStructures
             var right = source.Right;
 
             target.Balance = source.Balance;
-            target.Value = source.Value;
+            target.Item = source.Item;
             target.Left = left;
             target.Right = right;
 
@@ -650,7 +643,7 @@ namespace DataStructures
                     {
                         throw new InvalidOperationException();
                     }
-                    return current.Value;
+                    return current.Item;
                 }
             }
 
@@ -666,7 +659,7 @@ namespace DataStructures
             public Node Parent { get; internal set; }
             public Node Left { get; internal set; }
             public Node Right { get; internal set; }
-            public T Value { get; internal set; }
+            public T Item { get; internal set; }
             public int Balance { get; internal set; }
         }
     }
