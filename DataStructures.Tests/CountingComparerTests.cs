@@ -35,12 +35,10 @@ namespace DataStructures.Tests
         {
             var comparer1 = new CountingComparer();
             var comparer2 = new CountingComparer();
-            var comparer3 = new CountingComparer();
             var comparer4 = new CountingComparer();
             var comparer5 = new CountingComparer();
             var tree1 = new AvlTree<int>(comparer1);
             var tree2 = new CompactAvlTree<int>(comparer2);
-            var tree3 = new CompactAvlTree2<int>(comparer3);
             var list = new List<int>();
             var set = new SortedSet<int>(comparer5);
             for (int i = 0; i < _data.Length; i++)
@@ -48,7 +46,6 @@ namespace DataStructures.Tests
                 var n = _data[i];
                 tree1.Add(n);
                 tree2.Add(n);
-                tree3.Add(n);
                 set.Add(n);
                 var index = list.BinarySearch(n, comparer4);
                 if (index < 0)
@@ -59,13 +56,11 @@ namespace DataStructures.Tests
 
             _output.WriteLine($"AvlTree compare calls per 10000 inserts: {comparer1.Count}");
             _output.WriteLine($"CompactAvlTree compare calls per 10000 inserts: {comparer2.Count}");
-            _output.WriteLine($"CompactAvlTree2 compare calls per 10000 inserts: {comparer3.Count}");
             _output.WriteLine($"List compare calls per 10000 inserts: {comparer4.Count}");
             _output.WriteLine($"SortedSet (Red-Black tree) compare calls per 10000 inserts: {comparer5.Count}");
 
             Assert.True(comparer1.Count > 0);
             Assert.True(comparer2.Count > 0);
-            Assert.True(comparer3.Count > 0);
             Assert.True(comparer4.Count > 0);
             Assert.True(comparer5.Count > 0);
         }
