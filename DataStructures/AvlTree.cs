@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DataStructures
 {
-    public class AvlTree<T>: ICollection<T>
+    public class AvlTree<T>: ICollection<T>, IReadOnlyCollection<T>
     {
         private readonly IComparer<T> _comparer;
         private Node _root;
