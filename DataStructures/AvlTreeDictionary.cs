@@ -7,7 +7,6 @@ namespace DataStructures
     public class AvlTreeDictionary<TKey, TValue>: IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         private readonly AvlTree<KeyValuePair<TKey, TValue>> _tree;
-        private readonly KeyValuePairComparer _comparer;
         private KeyCollection _keys;
         private ValueCollection _values;
 
@@ -17,7 +16,8 @@ namespace DataStructures
             {
                 throw new ArgumentNullException(nameof(comparer));
             }
-            _comparer = new KeyValuePairComparer(comparer);
+            var kvp_comparer = new KeyValuePairComparer(comparer);
+            _tree = new AvlTree<KeyValuePair<TKey, TValue>>(kvp_comparer);
         }
 
         public AvlTreeDictionary()
