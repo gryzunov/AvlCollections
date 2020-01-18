@@ -153,6 +153,15 @@ namespace DataStructures
             return false;
         }
 
+        public void RemoveNode(Node node)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+            InternalRemoveNode(node);
+        }
+
         private void InternalRemoveNode(Node node)
         {
             var left = node.Left;
