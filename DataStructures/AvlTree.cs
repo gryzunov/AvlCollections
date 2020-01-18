@@ -24,6 +24,8 @@ namespace DataStructures
 
         public bool IsReadOnly => false;
 
+        public IComparer<T> Comparer => _comparer;
+
         public void Add(T item)
         {
             _ = FindOrCreateNode(item, out var _);
