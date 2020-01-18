@@ -7,17 +7,14 @@ namespace DataStructures
     public class AvlTreeDictionary<TKey, TValue>: IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         private readonly AvlTree<KeyValuePair<TKey, TValue>> _tree;
+        private readonly IComparer<TKey> _comparer;
         private KeyCollection _keys;
         private ValueCollection _values;
 
         public AvlTreeDictionary(IComparer<TKey> comparer)
         {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-            var kvp_comparer = new KeyValuePairComparer(comparer);
-            _tree = new AvlTree<KeyValuePair<TKey, TValue>>(kvp_comparer);
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
+            _tree = new AvlTree<KeyValuePair<TKey, TValue>>(new KeyValuePairComparer(comparer));
         }
 
         public AvlTreeDictionary()
@@ -31,20 +28,16 @@ namespace DataStructures
 
         public ValueCollection Values => _values ?? (_values = new ValueCollection(this));
 
-        public bool IsReadOnly => false;
-
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
-
-        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
-
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
-
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
+        public IComparer<TKey> Comparer => _comparer;
 
         public TValue this[TKey key]
         {
             get
             {
+                if (key == null)
+                {
+                    throw new ArgumentNullException(nameof(key));
+                }
                 var node = _tree.FindNode(new KeyValuePair<TKey, TValue>(key, default));
                 if (node == null)
                 {
@@ -54,14 +47,36 @@ namespace DataStructures
             }
             set
             {
+                if (key == null)
+                {
+                    throw new ArgumentNullException(nameof(key));
+                }
                 var item = new KeyValuePair<TKey, TValue>(key, value);
-                _ = _tree.FindOrCreateNode(item, out var node);
-                node.Item = item;
+                if (_tree.FindOrCreateNode(item, out var node))
+                {
+                    node.Item = item;
+                }
+            }
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (!TryAdd(key, value))
+            {
+                throw new ArgumentException("An item with the same key has already been added.", nameof(key));
             }
         }
 
         public bool TryGetValue(TKey key, out TValue value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
             var node = _tree.FindNode(new KeyValuePair<TKey, TValue>(key, default));
             if (node != null)
             {
@@ -74,6 +89,10 @@ namespace DataStructures
 
         public bool ContainsKey(TKey key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
             return _tree.Contains(new KeyValuePair<TKey, TValue>(key, default));
         }
 
@@ -88,66 +107,6 @@ namespace DataStructures
                 {
                     return true;
                 }
-            }
-            return false;
-        }
-
-        public bool Add(TKey key, TValue value)
-        {
-            return !_tree.FindOrCreateNode(new KeyValuePair<TKey, TValue>(key, value), out _);
-        }
-
-        public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
-        {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(valueFactory));
-            }
-            var found = _tree.FindOrCreateNode(new KeyValuePair<TKey, TValue>(key, default), out var node);
-            if (!found)
-            {
-                var value = valueFactory(key);
-                node.Item = new KeyValuePair<TKey, TValue>(key, value);
-            }
-            return node.Item.Value;
-        }
-
-        public bool Remove(TKey key)
-        {
-            return _tree.Remove(new KeyValuePair<TKey, TValue>(key, default));
-        }
-
-        public void Clear()
-        {
-            _tree.Clear();
-        }
-
-        public Enumerator GetEnumerator()
-        {
-            return new Enumerator(_tree);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new Enumerator(_tree);
-        }
-
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            Add(key, value);
-        }
-
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            Add(item.Key, item.Value);
-        }
-
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            var node = _tree.FindNode(item);
-            if (node != null && EqualityComparer<TValue>.Default.Equals(item.Value, node.Item.Value))
-            {
-                return true;
             }
             return false;
         }
@@ -174,9 +133,82 @@ namespace DataStructures
             }
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        public bool Remove(TKey key)
         {
-            var node = _tree.FindNode(new KeyValuePair<TKey, TValue>(item.Key, default));
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            return _tree.Remove(new KeyValuePair<TKey, TValue>(key, default));
+        }
+
+        public void Clear()
+        {
+            _tree.Clear();
+        }
+
+        public bool TryAdd(TKey key, TValue value)
+        {
+            return !_tree.FindOrCreateNode(new KeyValuePair<TKey, TValue>(key, value), out _);
+        }
+
+        public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(valueFactory));
+            }
+            var found = _tree.FindOrCreateNode(new KeyValuePair<TKey, TValue>(key, default), out var node);
+            if (!found)
+            {
+                var value = valueFactory(key);
+                node.Item = new KeyValuePair<TKey, TValue>(key, value);
+            }
+            return node.Item.Value;
+        }
+
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(_tree);
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
+
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
+
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
+
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
+
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new Enumerator(_tree);
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            var node = _tree.FindNode(item);
+            if (node == null)
+            {
+                return false;
+            }
+            return EqualityComparer<TValue>.Default.Equals(item.Value, node.Item.Value);
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            var node = _tree.FindNode(item);
             if (node != null && EqualityComparer<TValue>.Default.Equals(item.Value, node.Item.Value))
             {
                 _tree.RemoveNode(node);
