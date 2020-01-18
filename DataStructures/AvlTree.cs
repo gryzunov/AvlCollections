@@ -54,7 +54,7 @@ namespace DataStructures
             {
                 throw new ArgumentException(nameof(index));
             }
-            var walker = new TreeWalker(_root);
+            var walker = new TreeWalker(this);
             while (walker.MoveNext())
             {
                 var node = walker.Current;
@@ -64,7 +64,7 @@ namespace DataStructures
 
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(_root);
+            return new Enumerator(this);
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
@@ -557,10 +557,10 @@ namespace DataStructures
             private Node _right;
             private Action _action;
 
-            public TreeWalker(Node root)
+            public TreeWalker(AvlTree<T> tree)
             {
-                _root = root;
-                _right = root;
+                _root = tree._root;
+                _right = tree._root;
                 _current = null;
                 _action = _root == null ? Action.Stop : Action.Right;
             }
@@ -619,9 +619,9 @@ namespace DataStructures
         {
             private TreeWalker _walker;
 
-            public Enumerator(Node root)
+            public Enumerator(AvlTree<T> tree)
             {
-                _walker = new TreeWalker(root);
+                _walker = new TreeWalker(tree);
             }
 
             public bool MoveNext()
