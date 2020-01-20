@@ -23,6 +23,9 @@ namespace DataStructures
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
+#if DEBUG
+        internal Node Root => _root;
+#endif
         public bool Add(T value)
         {
             return InternalAdd(ref _root, value);
