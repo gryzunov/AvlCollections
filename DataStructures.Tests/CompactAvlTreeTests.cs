@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace DataStructures.Tests
 {
@@ -27,6 +28,57 @@ namespace DataStructures.Tests
             {
                 Assert.True(tree.Remove(i));
             }
+        }
+
+        private void CheckBalance(CompactAvlTree<int> tree)
+        {
+            CheckDepth(tree.Root);
+        }
+
+        private static int CheckDepth(CompactAvlTree<int>.Node node)
+        {
+            if (node != null)
+            {
+                int err = 0;
+                int rv;
+                int b = CheckDepth(node.Left);
+                int f = CheckDepth(node.Right);
+                if (b == f)
+                {
+                    if (!node.IsBalanced)
+                    {
+                        err = 1;
+                    }
+                    rv = b + 1;
+                }
+                else if (b == f - 1)
+                {
+                    if (node.Longer != CompactAvlTree<int>.Direction.Right)
+                    {
+                        err = 1;
+                    }
+                    rv = f + 1;
+                }
+                else if (b - 1 == f)
+                {
+                    if (node.Longer != CompactAvlTree<int>.Direction.Left)
+                    {
+                        err = 1;
+                    }
+                    rv = b + 1;
+                }
+                else
+                {
+                    err = 1;
+                    rv = 0;
+                }
+                if (err != 0)
+                {
+                    throw new Exception($"Error at {node.Value}: b={b}, f={f}, direction={node.Longer}");
+                }
+                return rv;
+            }
+            return 0;
         }
     }
 }
