@@ -30,6 +30,32 @@ namespace DataStructures.Tests
             }
         }
 
+        [Fact]
+        public void InsertBalanceTest()
+        {
+            var tree = new CompactAvlTree<int>();
+            for (int i = 1; i <= 100; i++)
+            {
+                tree.Add(i);
+                CheckBalance(tree);
+            }
+        }
+
+        [Fact]
+        public void DeleteBalanceTest()
+        {
+            var tree = new CompactAvlTree<int>();
+            for (int i = 1; i <= 100; i++)
+            {
+                tree.Add(i);
+            }
+            for (int i = 1; i <= 100; i++)
+            {
+                tree.Remove(i);
+                CheckBalance(tree);
+            }
+        }
+
         private void CheckBalance(CompactAvlTree<int> tree)
         {
             CheckDepth(tree.Root);
