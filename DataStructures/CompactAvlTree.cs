@@ -69,8 +69,20 @@ namespace DataStructures
             _root = null;
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] array, int index)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            if (index < 0 || index > array.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            if (array.Length - index < _count)
+            {
+                throw new ArgumentException(nameof(index));
+            }
             throw new NotImplementedException();
         }
 
@@ -383,6 +395,69 @@ namespace DataStructures
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        internal struct TreeWalker
+        {
+            private readonly Node _root;
+            private Stack<Node> _stack;
+            private Node _current;
+            private Node _right;
+            private Action _action;
+
+            public TreeWalker(CompactAvlTree<T> tree)
+            {
+                _root = tree._root;
+                _right = tree._root;
+                _stack = new Stack<Node>();
+                _current = null;
+                _action = _root == null ? Action.Stop : Action.Right;
+            }
+
+            public Node Current => _current;
+
+            public bool MoveNext()
+            {
+                switch (_action)
+                {
+                    case Action.Right:
+                        var node = _right;
+                        while (node != null)
+                        {
+                            _stack.Push(node);
+                            node = node.Left;
+                        }
+                        _action = Action.Parent;
+                        goto case Action.Parent;
+                    case Action.Parent:
+                        if (_stack.Count > 0)
+                        {
+                            _current = _stack.Pop();
+                            _right = _current.Right;
+                            _action = Action.Right;
+                            return true;
+                        }
+                        _current = null;
+                        _right = null;
+                        _action = Action.Stop;
+                        break;
+                }
+                return false;
+            }
+
+            public void Reset()
+            {
+                _current = null;
+                _right = _root;
+                _stack.Clear();
+            }
+
+            private enum Action
+            {
+                Parent,
+                Right,
+                Stop
+            }
         }
 
         internal enum Direction
