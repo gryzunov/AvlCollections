@@ -83,7 +83,12 @@ namespace DataStructures
             {
                 throw new ArgumentException(nameof(index));
             }
-            throw new NotImplementedException();
+            var walker = new TreeWalker(this);
+            while (walker.MoveNext())
+            {
+                var node = walker.Current;
+                array[index++] = node.Item;
+            }
         }
 
         private bool InternalAdd(ref Node treeRef, T item)
