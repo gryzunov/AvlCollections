@@ -412,11 +412,20 @@ namespace DataStructures
 
             public TreeWalker(CompactAvlTree<T> tree)
             {
-                _root = tree._root;
-                _right = tree._root;
-                _stack = new Stack<Node>();
+                var root = tree._root;
+                _root = root;
+                _right = root;
+                if (root == null)
+                {
+                    _action = Action.Stop;
+                    _stack = null;
+                }
+                else
+                {
+                    _action = Action.Right;
+                    _stack = new Stack<Node>(2 * Log2(tree.Count));
+                }
                 _current = null;
-                _action = _root == null ? Action.Stop : Action.Right;
             }
 
             public Node Current => _current;
@@ -457,10 +466,21 @@ namespace DataStructures
                 _stack.Clear();
             }
 
+            private static int Log2(int value)
+            {
+                int result = 0;
+                while (value > 0)
+                {
+                    result++;
+                    value >>= 1;
+                }
+                return result;
+            }
+
             private enum Action
             {
-                Parent,
                 Right,
+                Parent,
                 Stop
             }
         }
