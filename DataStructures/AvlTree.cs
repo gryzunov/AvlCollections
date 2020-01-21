@@ -26,6 +26,9 @@ namespace DataStructures
 
         public IComparer<T> Comparer => _comparer;
 
+#if DEBUG
+        internal Node Root => _root;
+#endif
         public void Add(T item)
         {
             _ = FindOrCreateNode(item, out var _);
