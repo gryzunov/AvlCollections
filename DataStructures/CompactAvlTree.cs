@@ -41,7 +41,7 @@ namespace DataStructures
             var node = _root;
             while (node != null)
             {
-                int compare = _comparer.Compare(value, node.Value);
+                int compare = _comparer.Compare(value, node.Item);
                 if (compare == 0)
                 {
                     return true;
@@ -57,7 +57,7 @@ namespace DataStructures
             ref var pathTopRef = ref treeRef;
             while (tree != null)
             {
-                var compare = _comparer.Compare(value, tree.Value);
+                var compare = _comparer.Compare(value, tree.Item);
                 if (compare == 0)
                 {
                     return false;
@@ -69,7 +69,7 @@ namespace DataStructures
                 treeRef = ref compare > 0 ? ref tree.Right : ref tree.Left;
                 tree = treeRef;
             }
-            tree = new Node { Value = value, Longer = Direction.None };
+            tree = new Node { Item = value, Longer = Direction.None };
             treeRef = tree;
             RebalanceInsert(ref pathTopRef, value);
             return true;
@@ -90,7 +90,7 @@ namespace DataStructures
             var tree = treeRef;
             while (tree != null)
             {
-                var compare = _comparer.Compare(value, tree.Value);
+                var compare = _comparer.Compare(value, tree.Item);
                 if (compare == 0)
                 {
                     targetRef = ref treeRef;
@@ -151,7 +151,7 @@ namespace DataStructures
             {
                 var tree = treeRef;
                 Direction dir;
-                if (_comparer.Compare(value, tree.Value) > 0)
+                if (_comparer.Compare(value, tree.Item) > 0)
                 {
                     if (tree.Right == null)
                     {
@@ -223,7 +223,7 @@ namespace DataStructures
             Direction first, second;
             if (!path.IsBalanced)
             {
-                first = GetDirection(_comparer.Compare(value, path.Value));
+                first = GetDirection(_comparer.Compare(value, path.Item));
                 if (path.Longer != first)
                 {
                     path.Longer = Direction.None;
@@ -232,7 +232,7 @@ namespace DataStructures
                 else
                 {
                     var node = first > 0 ? path.Right : path.Left;
-                    second = GetDirection(_comparer.Compare(value, node.Value));
+                    second = GetDirection(_comparer.Compare(value, node.Item));
                     if (first == second)
                     {
                         path = Rotate2(ref pathTopRef, first);
@@ -241,7 +241,7 @@ namespace DataStructures
                     {
                         path = first > 0 ? path.Right : path.Left;
                         path = second > 0 ? path.Right : path.Left;
-                        var third = GetDirection(_comparer.Compare(value, path.Value));
+                        var third = GetDirection(_comparer.Compare(value, path.Item));
                         path = Rotate3(ref pathTopRef, first, third);
                     }
                 }
@@ -332,7 +332,7 @@ namespace DataStructures
         {
             while (path != null)
             {
-                var compare = _comparer.Compare(value, path.Value);
+                var compare = _comparer.Compare(value, path.Item);
                 if (compare == 0)
                 {
                     return;
@@ -363,7 +363,7 @@ namespace DataStructures
 
             internal Node Right;
 
-            internal T Value { get; set; }
+            internal T Item { get; set; }
 
             internal Direction Longer { get; set; }
 

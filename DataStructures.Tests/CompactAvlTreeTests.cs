@@ -100,7 +100,7 @@ namespace DataStructures.Tests
                 }
                 if (err != 0)
                 {
-                    throw new Exception($"Error at {node.Value}: b={b}, f={f}, direction={node.Longer}");
+                    throw new Exception($"Error at {node.Item}: b={b}, f={f}, direction={node.Longer}");
                 }
                 return rv;
             }
