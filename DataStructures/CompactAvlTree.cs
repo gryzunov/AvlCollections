@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -7,11 +8,12 @@ namespace DataStructures
     /// <summary>
     /// Avl Tree with parentless node
     /// </summary>
-    public class CompactAvlTree<T>
+    public class CompactAvlTree<T>: ICollection<T>, IReadOnlyCollection<T>
     {
         private static Node _dummyNode = null;
         private readonly IComparer<T> _comparer;
         private Node _root;
+        private int _count;
 
         public CompactAvlTree()
         {
@@ -26,22 +28,32 @@ namespace DataStructures
 #if DEBUG
         internal Node Root => _root;
 #endif
-        public bool Add(T value)
+
+        public int Count => _count;
+
+        public bool IsReadOnly => false;
+
+        public void Add(T item)
         {
-            return InternalAdd(ref _root, value);
+            _ = InternalAdd(ref _root, item);
         }
 
-        public bool Remove(T value)
+        public bool TryAdd(T item)
         {
-            return InternalRemove(ref _root, value);
+            return InternalAdd(ref _root, item);
         }
 
-        public bool Contains(T value)
+        public bool Remove(T item)
+        {
+            return InternalRemove(ref _root, item);
+        }
+
+        public bool Contains(T item)
         {
             var node = _root;
             while (node != null)
             {
-                int compare = _comparer.Compare(value, node.Item);
+                int compare = _comparer.Compare(item, node.Item);
                 if (compare == 0)
                 {
                     return true;
@@ -51,13 +63,24 @@ namespace DataStructures
             return false;
         }
 
-        private bool InternalAdd(ref Node treeRef, T value)
+        public void Clear()
+        {
+            _count = 0;
+            _root = null;
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool InternalAdd(ref Node treeRef, T item)
         {
             var tree = treeRef;
             ref var pathTopRef = ref treeRef;
             while (tree != null)
             {
-                var compare = _comparer.Compare(value, tree.Item);
+                var compare = _comparer.Compare(item, tree.Item);
                 if (compare == 0)
                 {
                     return false;
@@ -69,9 +92,10 @@ namespace DataStructures
                 treeRef = ref compare > 0 ? ref tree.Right : ref tree.Left;
                 tree = treeRef;
             }
-            tree = new Node { Item = value, Longer = Direction.None };
+            tree = new Node { Item = item, Longer = Direction.None };
             treeRef = tree;
-            RebalanceInsert(ref pathTopRef, value);
+            RebalanceInsert(ref pathTopRef, item);
+            ++_count;
             return true;
         }
 
@@ -82,7 +106,7 @@ namespace DataStructures
             return (Direction) unchecked(value >> 31 | (int) ((uint) -value >> 31));
         }
 
-        private bool InternalRemove(ref Node treeRef, T value)
+        private bool InternalRemove(ref Node treeRef, T item)
         {
             ref var targetRef = ref _dummyNode;
             ref var pathTopRef = ref treeRef;
@@ -90,7 +114,7 @@ namespace DataStructures
             var tree = treeRef;
             while (tree != null)
             {
-                var compare = _comparer.Compare(value, tree.Item);
+                var compare = _comparer.Compare(item, tree.Item);
                 if (compare == 0)
                 {
                     targetRef = ref treeRef;
@@ -127,7 +151,7 @@ namespace DataStructures
             {
                 return false;
             }
-            var (n, d) = RebalanceDelete(ref pathTopRef, targetRef, value);
+            var (n, d) = RebalanceDelete(ref pathTopRef, targetRef, item);
             if (d == Direction.Right)
             {
                 SwapDelete(ref n.Right, ref treeRef, dir);
@@ -140,10 +164,11 @@ namespace DataStructures
             {
                 SwapDelete(ref targetRef, ref treeRef, dir);
             }
+            --_count;
             return true;
         }
 
-        private (Node, Direction) RebalanceDelete(ref Node treeRef, Node target, T value)
+        private (Node, Direction) RebalanceDelete(ref Node treeRef, Node target, T item)
         {
             var targetNode = target;
             var targetDir = Direction.None;
@@ -151,7 +176,7 @@ namespace DataStructures
             {
                 var tree = treeRef;
                 Direction dir;
-                if (_comparer.Compare(value, tree.Item) > 0)
+                if (_comparer.Compare(item, tree.Item) > 0)
                 {
                     if (tree.Right == null)
                     {
@@ -217,13 +242,13 @@ namespace DataStructures
             treeNode.Longer = targetNode.Longer;
         }
 
-        private void RebalanceInsert(ref Node pathTopRef, T value)
+        private void RebalanceInsert(ref Node pathTopRef, T item)
         {
             var path = pathTopRef;
             Direction first, second;
             if (!path.IsBalanced)
             {
-                first = GetDirection(_comparer.Compare(value, path.Item));
+                first = GetDirection(_comparer.Compare(item, path.Item));
                 if (path.Longer != first)
                 {
                     path.Longer = Direction.None;
@@ -232,7 +257,7 @@ namespace DataStructures
                 else
                 {
                     var node = first > 0 ? path.Right : path.Left;
-                    second = GetDirection(_comparer.Compare(value, node.Item));
+                    second = GetDirection(_comparer.Compare(item, node.Item));
                     if (first == second)
                     {
                         path = Rotate2(ref pathTopRef, first);
@@ -241,12 +266,12 @@ namespace DataStructures
                     {
                         path = first > 0 ? path.Right : path.Left;
                         path = second > 0 ? path.Right : path.Left;
-                        var third = GetDirection(_comparer.Compare(value, path.Item));
+                        var third = GetDirection(_comparer.Compare(item, path.Item));
                         path = Rotate3(ref pathTopRef, first, third);
                     }
                 }
             }
-            RebalancePath(path, value);
+            RebalancePath(path, item);
         }
 
         private static Node Rotate2(ref Node pathTopRef, Direction dir)
@@ -328,11 +353,11 @@ namespace DataStructures
             return c;
         }
 
-        private void RebalancePath(Node path, T value)
+        private void RebalancePath(Node path, T item)
         {
             while (path != null)
             {
-                var compare = _comparer.Compare(value, path.Item);
+                var compare = _comparer.Compare(item, path.Item);
                 if (compare == 0)
                 {
                     return;
@@ -348,6 +373,16 @@ namespace DataStructures
                     path = path.Left;
                 }
             }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
 
         internal enum Direction
