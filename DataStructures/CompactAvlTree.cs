@@ -91,6 +91,21 @@ namespace DataStructures
             }
         }
 
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         private bool InternalAdd(ref Node treeRef, T item)
         {
             var tree = treeRef;
@@ -392,14 +407,43 @@ namespace DataStructures
             }
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public struct Enumerator: IEnumerator<T>
         {
-            throw new NotImplementedException();
-        }
+            private TreeWalker _walker;
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
+            public Enumerator(CompactAvlTree<T> tree)
+            {
+                _walker = new TreeWalker(tree);
+            }
+
+            public T Current
+            {
+                get
+                {
+                    var current = _walker.Current;
+                    if (current == null)
+                    {
+                        throw new InvalidOperationException();
+                    }
+                    return current.Item;
+                }
+            }
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                return _walker.MoveNext();
+            }
+
+            public void Reset()
+            {
+                _walker.Reset();
+            }
         }
 
         internal struct TreeWalker
