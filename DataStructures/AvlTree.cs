@@ -589,7 +589,6 @@ namespace DataStructures
             {
                 if (_cursor == null)
                 {
-                    _current = null;
                     return false;
                 }
                 if (_current == null)
