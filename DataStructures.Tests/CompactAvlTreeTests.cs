@@ -56,6 +56,22 @@ namespace DataStructures.Tests
             }
         }
 
+        [Fact]
+        public void CopyToArrayTest()
+        {
+            var tree = new CompactAvlTree<int>();
+            var src = new int[100];
+            for (int i = 0; i < src.Length; i++)
+            {
+                src[i] = i + 1;
+                tree.Add(i + 1);
+            }
+
+            var dest = new int[100];
+            tree.CopyTo(dest, 0);
+            Assert.Equal(src, dest);
+        }
+
         private void CheckBalance(CompactAvlTree<int> tree)
         {
             CheckDepth(tree.Root);
