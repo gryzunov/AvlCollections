@@ -449,65 +449,58 @@ namespace DataStructures
         internal struct TreeWalker
         {
             private readonly Node _root;
-            private Stack<Node> _stack;
+            private readonly Stack<Node> _stack;
             private Node _current;
-            private Node _right;
-            private Action _action;
 
             public TreeWalker(CompactAvlTree<T> tree)
             {
-                var root = tree._root;
-                _root = root;
-                _right = root;
-                if (root == null)
+                _current = null;
+                _root = tree._root;
+                if (tree._root == null)
                 {
-                    _action = Action.Stop;
                     _stack = null;
                 }
                 else
                 {
-                    _action = Action.Right;
                     _stack = new Stack<Node>(2 * Log2(tree.Count));
+                    InitStack();
                 }
-                _current = null;
             }
 
             public Node Current => _current;
 
             public bool MoveNext()
             {
-                switch (_action)
+                if (_stack.Count == 0)
                 {
-                    case Action.Right:
-                        var node = _right;
-                        while (node != null)
-                        {
-                            _stack.Push(node);
-                            node = node.Left;
-                        }
-                        _action = Action.Parent;
-                        goto case Action.Parent;
-                    case Action.Parent:
-                        if (_stack.Count > 0)
-                        {
-                            _current = _stack.Pop();
-                            _right = _current.Right;
-                            _action = Action.Right;
-                            return true;
-                        }
-                        _current = null;
-                        _right = null;
-                        _action = Action.Stop;
-                        break;
+                    _current = null;
+                    return false;
                 }
-                return false;
+                _current = _stack.Pop();
+                var node = _current.Right;
+                while (node != null)
+                {
+                    _stack.Push(node);
+                    node = node.Left;
+                }
+                return true;
             }
 
             public void Reset()
             {
                 _current = null;
-                _right = _root;
                 _stack.Clear();
+                InitStack();
+            }
+
+            private void InitStack()
+            {
+                var node = _root;
+                while (node != null)
+                {
+                    _stack.Push(node);
+                    node = node.Left;
+                }
             }
 
             private static int Log2(int value)
@@ -519,13 +512,6 @@ namespace DataStructures
                     value >>= 1;
                 }
                 return result;
-            }
-
-            private enum Action
-            {
-                Right,
-                Parent,
-                Stop
             }
         }
 
