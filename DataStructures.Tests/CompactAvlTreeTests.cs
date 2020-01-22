@@ -11,7 +11,7 @@ namespace DataStructures.Tests
             var tree = new CompactAvlTree<int>();
             for (int i = 1; i <= 100; i++)
             {
-                Assert.True(tree.Add(i));
+                Assert.True(tree.TryAdd(i));
             }
         }
 
