@@ -572,10 +572,15 @@ namespace DataStructures
 
             public TreeWalker(AvlTree<T> tree)
             {
-                _root = tree._root;
-                _cursor = tree._root;
                 _current = null;
-                GoDeepLeft();
+                var node = tree._root;
+                _root = node;
+                _cursor = node;
+                while (node != null)
+                {
+                    _cursor = node;
+                    node = node.Left;
+                }
             }
 
             public Node Current => _current;
@@ -620,13 +625,8 @@ namespace DataStructures
             public void Reset()
             {
                 _current = null;
-                _cursor = _root;
-                GoDeepLeft();
-            }
-
-            private void GoDeepLeft()
-            {
-                var node = _cursor;
+                var node = _root;
+                _cursor = node;
                 while (node != null)
                 {
                     _cursor = node;
