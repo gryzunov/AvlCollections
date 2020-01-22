@@ -567,11 +567,83 @@ namespace DataStructures
         internal struct TreeWalker
         {
             private readonly Node _root;
+            private Node _cursor;
+            private Node _current;
+
+            public TreeWalker(AvlTree<T> tree)
+            {
+                _root = tree._root;
+                _cursor = tree._root;
+                _current = null;
+                GoDeepLeft();
+            }
+
+            public Node Current => _current;
+
+            public bool MoveNext()
+            {
+                if (_cursor == null)
+                {
+                    _current = null;
+                    return false;
+                }
+                if (_current == null)
+                {
+                    _current = _cursor;
+                    return true;
+                }
+                if (_cursor.Right != null)
+                {
+                    _cursor = _cursor.Right;
+                    while (_cursor.Left != null)
+                    {
+                        _cursor = _cursor.Left;
+                    }
+                    _current = _cursor;
+                    return true;
+                }
+                Node start;
+                do
+                {
+                    start = _cursor;
+                    if (_cursor == null || _cursor.Parent == null)
+                    {
+                        _current = null;
+                        _cursor = null;
+                        return false;
+                    }
+                    _cursor = _cursor.Parent;
+                    _current = _cursor;
+                } while (start != _cursor.Left);
+                return true;
+            }
+
+            public void Reset()
+            {
+                _current = null;
+                _cursor = _root;
+                GoDeepLeft();
+            }
+
+            private void GoDeepLeft()
+            {
+                var node = _cursor;
+                while (node != null)
+                {
+                    _cursor = node;
+                    node = node.Left;
+                }
+            }
+        }
+
+        internal struct TreeWalker2
+        {
+            private readonly Node _root;
             private Node _current;
             private Node _right;
             private Action _action;
 
-            public TreeWalker(AvlTree<T> tree)
+            public TreeWalker2(AvlTree<T> tree)
             {
                 _root = tree._root;
                 _right = tree._root;
