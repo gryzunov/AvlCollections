@@ -602,20 +602,19 @@ namespace DataStructures
                     _current = _cursor;
                     return true;
                 }
-                Node start;
-                do
+                while (_cursor.Parent != null)
                 {
-                    start = _cursor;
-                    if (_cursor == null || _cursor.Parent == null)
-                    {
-                        _current = null;
-                        _cursor = null;
-                        return false;
-                    }
+                    var prev = _cursor;
                     _cursor = _cursor.Parent;
-                    _current = _cursor;
-                } while (start != _cursor.Left);
-                return true;
+                    if (_cursor.Left == prev)
+                    {
+                        _current = _cursor;
+                        return true;
+                    }
+                }
+                _current = null;
+                _cursor = null;
+                return false;
             }
 
             public void Reset()
@@ -633,71 +632,6 @@ namespace DataStructures
                     _cursor = node;
                     node = node.Left;
                 }
-            }
-        }
-
-        internal struct TreeWalker2
-        {
-            private readonly Node _root;
-            private Node _current;
-            private Node _right;
-            private Action _action;
-
-            public TreeWalker2(AvlTree<T> tree)
-            {
-                _root = tree._root;
-                _right = tree._root;
-                _current = null;
-                _action = _root == null ? Action.Stop : Action.Right;
-            }
-
-            public bool MoveNext()
-            {
-                switch (_action)
-                {
-                    case Action.Right:
-                        _current = _right;
-                        while (_current.Left != null)
-                        {
-                            _current = _current.Left;
-                        }
-                        _right = _current.Right;
-                        _action = _right != null ? Action.Right : Action.Parent;
-                        return true;
-                    case Action.Parent:
-                        while (_current.Parent != null)
-                        {
-                            var previous = _current;
-                            _current = _current.Parent;
-                            if (_current.Left == previous)
-                            {
-                                _right = _current.Right;
-                                _action = _right != null ? Action.Right : Action.Parent;
-                                return true;
-                            }
-                        }
-                        _action = Action.Stop;
-                        _current = null;
-                        return false;
-                    default:
-                        return false;
-                }
-            }
-
-            public Node Current => _current;
-
-            public void Reset()
-            {
-                _right = _root;
-                _current = null;
-                _action = _root == null ? Action.Stop : Action.Right;
-            }
-
-            private enum Action
-            {
-                Parent,
-                Right,
-                Stop
             }
         }
 
