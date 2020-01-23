@@ -7,7 +7,7 @@ namespace DataStructures.Benchmark
         static void Main(string[] args)
         {
             //var summary = BenchmarkRunner.Run<AvlTreeVsRBTreeInsertRandom>();
-            var summary = BenchmarkRunner.Run<AvlVariantsCompare>();
+            var summary = BenchmarkRunner.Run<AvlTreeWalkCompare>();
         }
     }
 }
