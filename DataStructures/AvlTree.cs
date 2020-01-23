@@ -157,6 +157,16 @@ namespace DataStructures
             InternalRemoveNode(node);
         }
 
+        /// <summary>
+        /// Perform in-order walk of the tree and invoke <paramref name="func"/> on each item.
+        /// If <paramref name="func"/> returns false, walking process stops.
+        /// </summary>
+        /// <remarks>
+        /// This method is 2-3 times faster than using an enumerator, mostly due to
+        /// write barriers in enumerator. However enumerator is allocation-free, but delegate creation
+        /// takes up some memory.
+        /// </remarks>
+        /// <param name="func">Delegate</param>
         public void InOrderTreeWalk(Func<T, bool> func)
         {
             var cursor = _root;
