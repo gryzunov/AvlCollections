@@ -59,12 +59,11 @@ namespace DataStructures
             {
                 throw new ArgumentException(nameof(index));
             }
-            var walker = new TreeWalker(this);
-            while (walker.MoveNext())
+            InOrderTreeWalk(item =>
             {
-                var node = walker.Current;
-                array[index++] = node.Item;
-            }
+                array[index++] = item;
+                return true;
+            });
         }
 
         public Enumerator GetEnumerator()
