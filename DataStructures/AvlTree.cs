@@ -72,11 +72,6 @@ namespace DataStructures
             return new Enumerator(this);
         }
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public bool Remove(T item)
         {
             var node = FindNode(item);
@@ -86,11 +81,6 @@ namespace DataStructures
                 return true;
             }
             return false;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         public Node FindNode(T item)
@@ -165,6 +155,21 @@ namespace DataStructures
                 throw new ArgumentNullException(nameof(node));
             }
             InternalRemoveNode(node);
+        }
+
+        public bool TryAdd(T item)
+        {
+            return FindOrCreateNode(item, out var _);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private void InternalRemoveNode(Node node)
