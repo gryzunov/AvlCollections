@@ -6,6 +6,31 @@ namespace DataStructures.Tests
     public class AvlTreeTests
     {
         [Fact]
+        public void TestInsert()
+        {
+            var tree = new AvlTree<int>();
+            for (int i = 1; i <= 100; i++)
+            {
+                Assert.True(tree.TryAdd(i));
+            }
+        }
+
+        [Fact]
+        public void TestDelete()
+        {
+            var tree = new AvlTree<int>();
+            for (int i = 1; i <= 100; i++)
+            {
+                tree.Add(i);
+            }
+            Assert.False(tree.Remove(1000));
+            for (int i = 1; i <= 100; i++)
+            {
+                Assert.True(tree.Remove(i));
+            }
+        }
+
+        [Fact]
         public void InsertBalanceTest()
         {
             var tree = new AvlTree<int>();
