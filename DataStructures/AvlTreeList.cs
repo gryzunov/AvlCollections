@@ -159,6 +159,11 @@ namespace DataStructures
             InternalRemoveNode(node);
         }
 
+        public bool TryAdd(T item)
+        {
+            return FindOrCreateNode(item, out var _);
+        }
+
         private void InternalRemoveNode(Node node)
         {
             var left = node.Left;
