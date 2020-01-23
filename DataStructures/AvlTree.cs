@@ -157,9 +157,49 @@ namespace DataStructures
             InternalRemoveNode(node);
         }
 
+        public void InOrderTreeWalk(Func<T, bool> func)
+        {
+            var cursor = _root;
+            if (cursor == null)
+            {
+                return;
+            }
+            while (cursor.Left != null)
+            {
+                cursor = cursor.Left;
+            }
+            while (true)
+            {
+            Loop:
+                if (!func(cursor.Item))
+                {
+                    break;
+                }
+                if (cursor.Right != null)
+                {
+                    cursor = cursor.Right;
+                    while (cursor.Left != null)
+                    {
+                        cursor = cursor.Left;
+                    }
+                    goto Loop;
+                }
+                while (cursor.Parent != null)
+                {
+                    var prev = cursor;
+                    cursor = cursor.Parent;
+                    if (cursor.Left == prev)
+                    {
+                        goto Loop;
+                    }
+                }
+                break;
+            }
+        }
+
         public bool TryAdd(T item)
         {
-            return FindOrCreateNode(item, out var _);
+            return !FindOrCreateNode(item, out var _);
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
