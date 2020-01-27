@@ -36,7 +36,7 @@ namespace DataStructures.Benchmark
             }
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public long TreeWalkDelegate()
         {
             long sum = 0;
