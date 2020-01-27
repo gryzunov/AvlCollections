@@ -224,6 +224,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvlTreeVsRBTreeInsertRandom.cs" />
+    <Compile Include="AvlTreeVsRBTreeInsertSorted.cs" />
+    <Compile Include="AvlTreeVsRBTreeSearch.cs" />
     <Compile Include="AvlTreeWalkCompare.cs" />
     <Compile Include="AvlVariantsCompare.cs" />
     <Compile Include="Program.cs" />

@@ -6,7 +6,7 @@ namespace DataStructures.Benchmark
 {
     [MemoryDiagnoser]
     [LegacyJitX86Job, RyuJitX64Job]
-    public class AvlTreeVsRBTreeInsertRandom
+    public class AvlTreeVsRBTreeInsertSorted
     {
         private const int Seed = 1000;
         private const int MaxNumber = 100000;
@@ -30,6 +30,7 @@ namespace DataStructures.Benchmark
                 }
                 _data[i] = number;
             }
+            Array.Sort(_data);
         }
 
         [Benchmark]
