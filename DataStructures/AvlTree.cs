@@ -626,15 +626,17 @@ namespace DataStructures
 
             public TreeWalker(AvlTree<T> tree)
             {
-                _current = null;
                 var node = tree._root;
                 _root = node;
-                _cursor = node;
-                while (node != null)
+                if (node != null)
                 {
-                    _cursor = node;
-                    node = node.Left;
+                    while (node.Left != null)
+                    {
+                        node = node.Left;
+                    }
                 }
+                _cursor = node;
+                _current = null;
             }
 
             public Node Current => _current;
@@ -650,23 +652,26 @@ namespace DataStructures
                     _current = _cursor;
                     return true;
                 }
-                if (_cursor.Right != null)
+                var cursor = _cursor;
+                if (cursor.Right != null)
                 {
-                    _cursor = _cursor.Right;
-                    while (_cursor.Left != null)
+                    cursor = cursor.Right;
+                    while (cursor.Left != null)
                     {
-                        _cursor = _cursor.Left;
+                        cursor = cursor.Left;
                     }
-                    _current = _cursor;
+                    _cursor = cursor;
+                    _current = cursor;
                     return true;
                 }
-                while (_cursor.Parent != null)
+                while (cursor.Parent != null)
                 {
-                    var prev = _cursor;
-                    _cursor = _cursor.Parent;
-                    if (_cursor.Left == prev)
+                    var prev = cursor;
+                    cursor = cursor.Parent;
+                    if (cursor.Left == prev)
                     {
-                        _current = _cursor;
+                        _cursor = cursor;
+                        _current = cursor;
                         return true;
                     }
                 }
@@ -677,14 +682,16 @@ namespace DataStructures
 
             public void Reset()
             {
-                _current = null;
                 var node = _root;
-                _cursor = node;
-                while (node != null)
+                if (node != null)
                 {
-                    _cursor = node;
-                    node = node.Left;
+                    while (node.Left != null)
+                    {
+                        node = node.Left;
+                    }
                 }
+                _cursor = node;
+                _current = null;
             }
         }
 
