@@ -179,10 +179,9 @@ namespace DataStructures
             }
             while (true)
             {
-            Loop:
                 if (!func(cursor.Item))
                 {
-                    break;
+                    return;
                 }
                 if (cursor.Right != null)
                 {
@@ -191,18 +190,21 @@ namespace DataStructures
                     {
                         cursor = cursor.Left;
                     }
-                    goto Loop;
+                    continue;
                 }
-                while (cursor.Parent != null)
+                while (true)
                 {
+                    if (cursor.Parent == null)
+                    {
+                        return;
+                    }
                     var prev = cursor;
                     cursor = cursor.Parent;
                     if (cursor.Left == prev)
                     {
-                        goto Loop;
+                        break;
                     }
                 }
-                break;
             }
         }
 
