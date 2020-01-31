@@ -65,7 +65,7 @@ namespace DataStructures.Tests
         }
 
         [Fact]
-        public void RemoveSingleItem()
+        public void RemoveSingleItemTest()
         {
             var tree = new AvlTreeList<int>() { 1 };
             var removed = tree.Remove(1);
@@ -73,6 +73,48 @@ namespace DataStructures.Tests
             Assert.Empty(tree);
             Assert.Null(tree.First);
             Assert.Null(tree.Last);
+        }
+
+        [Fact]
+        public void EmptyForeachTest()
+        {
+            var tree = new AvlTreeList<int>();
+            var count = 0;
+            foreach (var item in tree)
+            {
+                count++;
+            }
+            Assert.Equal(0, count);
+        }
+
+        [Fact]
+        public void NonEmptyForeachTest()
+        {
+            var tree = new AvlTreeList<int>() { 1, 2, 3 };
+            var count = 0;
+            foreach (var item in tree)
+            {
+                count++;
+            }
+            Assert.Equal(3, count);
+        }
+
+        [Fact]
+        public void EnumeratorTest()
+        {
+            var tree = new AvlTreeList<int>() { 1, 2, 3 };
+            var enumerator = tree.GetEnumerator();
+            var result = enumerator.MoveNext();
+            Assert.True(result);
+            result = enumerator.MoveNext();
+            Assert.True(result);
+            result = enumerator.MoveNext();
+            Assert.True(result);
+            result = enumerator.MoveNext();
+            Assert.False(result);
+            result = enumerator.MoveNext();
+            Assert.False(result);
+            Assert.Throws<InvalidOperationException>(() => enumerator.Current);
         }
 
         private void AddValues(AvlTreeList<int> tree)
