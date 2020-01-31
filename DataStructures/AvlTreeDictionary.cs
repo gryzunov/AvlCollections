@@ -125,12 +125,11 @@ namespace DataStructures
             {
                 throw new ArgumentException(nameof(index));
             }
-            var walker = new AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker(_tree);
-            while (walker.MoveNext())
+            _tree.InOrderTreeWalk(item =>
             {
-                var node = walker.Current;
-                array[index++] = node.Item;
-            }
+                array[index++] = item;
+                return true;
+            });
         }
 
         public bool Remove(TKey key)
@@ -263,14 +262,14 @@ namespace DataStructures
 
         public sealed class KeyCollection: ICollection<TKey>
         {
-            private readonly AvlTreeDictionary<TKey, TValue> _tree;
+            private readonly AvlTreeDictionary<TKey, TValue> _owner;
 
-            public KeyCollection(AvlTreeDictionary<TKey, TValue> tree)
+            public KeyCollection(AvlTreeDictionary<TKey, TValue> owner)
             {
-                _tree = tree;
+                _owner = owner;
             }
 
-            public int Count => _tree.Count;
+            public int Count => _owner.Count;
 
             public bool IsReadOnly => true;
 
@@ -286,7 +285,7 @@ namespace DataStructures
 
             public bool Contains(TKey item)
             {
-                return _tree.ContainsKey(item);
+                return _owner.ContainsKey(item);
             }
 
             public void CopyTo(TKey[] array, int index)
@@ -299,16 +298,15 @@ namespace DataStructures
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
-                if (array.Length - index < _tree.Count)
+                if (array.Length - index < _owner.Count)
                 {
                     throw new ArgumentException(nameof(index));
                 }
-                var walker = new AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker(_tree._tree);
-                while (walker.MoveNext())
+                _owner._tree.InOrderTreeWalk(item =>
                 {
-                    var node = walker.Current;
-                    array[index++] = node.Item.Key;
-                }
+                    array[index++] = item.Key;
+                    return true;
+                });
             }
 
             public bool Remove(TKey item)
@@ -318,17 +316,17 @@ namespace DataStructures
 
             public KeyEnumerator GetEnumerator()
             {
-                return new KeyEnumerator(_tree._tree);
+                return new KeyEnumerator(_owner._tree);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return new KeyEnumerator(_tree._tree);
+                return new KeyEnumerator(_owner._tree);
             }
 
             IEnumerator<TKey> IEnumerable<TKey>.GetEnumerator()
             {
-                return new KeyEnumerator(_tree._tree);
+                return new KeyEnumerator(_owner._tree);
             }
 
             public struct KeyEnumerator: IEnumerator<TKey>
@@ -373,14 +371,14 @@ namespace DataStructures
 
         public sealed class ValueCollection: ICollection<TValue>
         {
-            private readonly AvlTreeDictionary<TKey, TValue> _tree;
+            private readonly AvlTreeDictionary<TKey, TValue> _owner;
 
-            public ValueCollection(AvlTreeDictionary<TKey, TValue> tree)
+            public ValueCollection(AvlTreeDictionary<TKey, TValue> owner)
             {
-                _tree = tree;
+                _owner = owner;
             }
 
-            public int Count => _tree.Count;
+            public int Count => _owner.Count;
 
             public bool IsReadOnly => true;
 
@@ -396,7 +394,7 @@ namespace DataStructures
 
             public bool Contains(TValue item)
             {
-                return _tree.ContainsValue(item);
+                return _owner.ContainsValue(item);
             }
 
             public void CopyTo(TValue[] array, int index)
@@ -409,16 +407,15 @@ namespace DataStructures
                 {
                     throw new ArgumentOutOfRangeException(nameof(index));
                 }
-                if (array.Length - index < _tree.Count)
+                if (array.Length - index < _owner.Count)
                 {
                     throw new ArgumentException(nameof(index));
                 }
-                var walker = new AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker(_tree._tree);
-                while (walker.MoveNext())
+                _owner._tree.InOrderTreeWalk(item =>
                 {
-                    var node = walker.Current;
-                    array[index++] = node.Item.Value;
-                }
+                    array[index++] = item.Value;
+                    return true;
+                });
             }
 
             public bool Remove(TValue item)
@@ -428,17 +425,17 @@ namespace DataStructures
 
             public ValueEnumerator GetEnumerator()
             {
-                return new ValueEnumerator(_tree._tree);
+                return new ValueEnumerator(_owner._tree);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return new ValueEnumerator(_tree._tree);
+                return new ValueEnumerator(_owner._tree);
             }
 
             IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
             {
-                return new ValueEnumerator(_tree._tree);
+                return new ValueEnumerator(_owner._tree);
             }
 
             public struct ValueEnumerator: IEnumerator<TValue>
