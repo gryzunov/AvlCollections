@@ -411,7 +411,7 @@ namespace AvlCollections
         {
             private TreeWalker _walker;
 
-            public Enumerator(CompactAvlTree<T> tree)
+            internal Enumerator(CompactAvlTree<T> tree)
             {
                 _walker = new TreeWalker(tree);
             }
