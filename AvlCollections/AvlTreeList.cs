@@ -10,6 +10,7 @@ namespace AvlCollections
         private Node _root;
         private Node _head;
         private int _count;
+        private int _version;
 
         public AvlTreeList(IComparer<T> comparer)
         {
@@ -56,6 +57,7 @@ namespace AvlCollections
             _root = null;
             _head = null;
             _count = 0;
+            _version++;
         }
 
         public Node FindNode(T item)
@@ -112,6 +114,7 @@ namespace AvlCollections
                         node = left;
                         InsertBalance(current, 1);
                         _count++;
+                        _version++;
                         return false;
                     }
                     current = current.Left;
@@ -130,6 +133,7 @@ namespace AvlCollections
                         node = right;
                         InsertBalance(current, -1);
                         _count++;
+                        _version++;
                         return false;
                     }
                     current = current.Right;
@@ -147,6 +151,7 @@ namespace AvlCollections
             _head = newNode;
             node = newNode;
             _count++;
+            _version++;
             return false;
         }
 
@@ -177,6 +182,7 @@ namespace AvlCollections
                         _root = null;
                         _head = null;
                         _count = 0;
+                        _version++;
                         return;
                     }
                     else
@@ -284,6 +290,7 @@ namespace AvlCollections
                 _head = node.Next;
             }
             _count--;
+            _version++;
         }
 
         private void InsertBalance(Node node, int balance)
@@ -572,7 +579,7 @@ namespace AvlCollections
 
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(_head);
+            return new Enumerator(this);
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
@@ -623,21 +630,27 @@ namespace AvlCollections
 
         public struct Enumerator: IEnumerator<T>
         {
-            private readonly Node _head;
+            private readonly AvlTreeList<T> _tree;
+            private readonly int _version;
             private Node _node;
             private T _current;
             private bool _hasValue;
 
-            internal Enumerator(Node head)
+            internal Enumerator(AvlTreeList<T> tree)
             {
-                _head = head;
-                _node = head;
+                _tree = tree;
+                _version = tree._version;
+                _node = _tree._head;
                 _current = default;
                 _hasValue = false;
             }
 
             public bool MoveNext()
             {
+                if (_version != _tree._version)
+                {
+                    throw new InvalidOperationException();
+                }
                 if (_node == null)
                 {
                     _hasValue = false;
@@ -646,7 +659,7 @@ namespace AvlCollections
                 _current = _node.Item;
                 _node = _node.Next;
                 _hasValue = true;
-                if (_node == _head)
+                if (_node == _tree._head)
                 {
                     _node = null;
                 }
@@ -655,7 +668,11 @@ namespace AvlCollections
 
             public void Reset()
             {
-                _node = _head;
+                if (_version != _tree._version)
+                {
+                    throw new InvalidOperationException();
+                }
+                _node = _tree._head;
                 _current = default;
                 _hasValue = false;
             }
