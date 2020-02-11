@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 
-namespace DataStructures.Benchmark
+namespace AvlCollections.Benchmark
 {
     [MemoryDiagnoser]
     [LegacyJitX86Job, RyuJitX64Job]

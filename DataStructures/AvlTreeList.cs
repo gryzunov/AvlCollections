@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace DataStructures
+namespace AvlCollections
 {
     public class AvlTreeList<T>: ICollection<T>, IReadOnlyCollection<T>
     {

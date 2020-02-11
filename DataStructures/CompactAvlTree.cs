@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace DataStructures
+namespace AvlCollections
 {
     /// <summary>
     /// Avl Tree with parentless node

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace DataStructures.Tests
+namespace AvlCollections.Tests
 {
     public class CountingComparerTests
     {

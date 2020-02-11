@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 
-namespace DataStructures.Benchmark
+namespace AvlCollections.Benchmark
 {
     class Program
     {

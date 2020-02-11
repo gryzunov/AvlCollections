@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace DataStructures.Tests
+namespace AvlCollections.Tests
 {
     public class CompactAvlTreeTests
     {

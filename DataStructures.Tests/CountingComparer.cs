@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DataStructures.Tests
+namespace AvlCollections.Tests
 {
     public class CountingComparer: IComparer<int>
     {

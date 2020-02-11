@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 
-namespace DataStructures.Benchmark
+namespace AvlCollections.Benchmark
 {
     [LegacyJitX86Job, RyuJitX64Job]
     public class AvlTreeVsRBTreeSearch

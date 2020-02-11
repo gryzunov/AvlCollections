@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace DataStructures.Tests
+namespace AvlCollections.Tests
 {
     public class AvlTreeListTests
     {
