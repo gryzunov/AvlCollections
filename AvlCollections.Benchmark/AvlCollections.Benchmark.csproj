@@ -236,7 +236,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataStructures\DataStructures.csproj">
+    <ProjectReference Include="..\AvlCollections\AvlCollections.csproj">
       <Project>{a1a6ea46-55f0-4ec4-8d9e-f73ad07cdf2b}</Project>
       <Name>DataStructures</Name>
     </ProjectReference>

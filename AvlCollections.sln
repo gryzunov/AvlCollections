@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataStructures", "DataStructures\DataStructures.csproj", "{A1A6EA46-55F0-4EC4-8D9E-F73AD07CDF2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvlCollections", "AvlCollections\AvlCollections.csproj", "{A1A6EA46-55F0-4EC4-8D9E-F73AD07CDF2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructures.Benchmark", "DataStructures.Benchmark\DataStructures.Benchmark.csproj", "{A51DC8D2-C0EC-419C-B71E-33AC5BFCED75}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvlCollections.Benchmark", "AvlCollections.Benchmark\AvlCollections.Benchmark.csproj", "{A51DC8D2-C0EC-419C-B71E-33AC5BFCED75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructures.Tests", "DataStructures.Tests\DataStructures.Tests.csproj", "{EF0EF662-F272-4CC2-9323-D6AB62A0BB39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvlCollections.Tests", "AvlCollections.Tests\AvlCollections.Tests.csproj", "{EF0EF662-F272-4CC2-9323-D6AB62A0BB39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

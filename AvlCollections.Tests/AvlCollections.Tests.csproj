@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataStructures\DataStructures.csproj" />
+    <ProjectReference Include="..\AvlCollections\AvlCollections.csproj" />
   </ItemGroup>
 
 </Project>
