@@ -9,6 +9,7 @@ namespace AvlCollections
         private readonly IComparer<T> _comparer;
         private Node _root;
         private int _count;
+        private int _version;
 
         public AvlTree()
         {
@@ -38,6 +39,7 @@ namespace AvlCollections
         {
             _root = null;
             _count = 0;
+            _version++;
         }
 
         public bool Contains(T item)
@@ -119,6 +121,7 @@ namespace AvlCollections
                         node = current.Left;
                         InsertBalance(current, 1);
                         _count++;
+                        _version++;
                         return false;
                     }
                     current = current.Left;
@@ -131,6 +134,7 @@ namespace AvlCollections
                         node = current.Right;
                         InsertBalance(current, -1);
                         _count++;
+                        _version++;
                         return false;
                     }
                     current = current.Right;
@@ -144,6 +148,7 @@ namespace AvlCollections
             _root = new Node { Item = item };
             node = _root;
             _count++;
+            _version++;
             return false;
         }
 
@@ -334,6 +339,7 @@ namespace AvlCollections
                 }
             }
             _count--;
+            _version++;
         }
 
         private void InsertBalance(Node node, int balance)
@@ -699,20 +705,32 @@ namespace AvlCollections
 
         public struct Enumerator: IEnumerator<T>
         {
+            private readonly AvlTree<T> _tree;
+            private readonly int _version;
             private TreeWalker _walker;
 
-            public Enumerator(AvlTree<T> tree)
+            internal Enumerator(AvlTree<T> tree)
             {
+                _tree = tree;
+                _version = _tree._version;
                 _walker = new TreeWalker(tree);
             }
 
             public bool MoveNext()
             {
+                if (_version != _tree._version)
+                {
+                    throw new InvalidOperationException();
+                }
                 return _walker.MoveNext();
             }
 
             public void Reset()
             {
+                if (_version != _tree._version)
+                {
+                    throw new InvalidOperationException();
+                }
                 _walker.Reset();
             }
 
