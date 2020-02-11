@@ -225,7 +225,7 @@ namespace AvlCollections
         {
             private AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker _walker;
 
-            public Enumerator(AvlTree<KeyValuePair<TKey, TValue>> tree)
+            internal Enumerator(AvlTree<KeyValuePair<TKey, TValue>> tree)
             {
                 _walker = new AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker(tree);
             }
