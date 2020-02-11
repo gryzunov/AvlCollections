@@ -14,6 +14,7 @@ namespace AvlCollections
         private readonly IComparer<T> _comparer;
         private Node _root;
         private int _count;
+        private int _version;
 
         public CompactAvlTree()
         {
@@ -65,8 +66,9 @@ namespace AvlCollections
 
         public void Clear()
         {
-            _count = 0;
             _root = null;
+            _count = 0;
+            ++_version;
         }
 
         public void CopyTo(T[] array, int index)
@@ -128,6 +130,7 @@ namespace AvlCollections
             treeRef = tree;
             RebalanceInsert(ref pathTopRef, item);
             ++_count;
+            ++_version;
             return true;
         }
 
@@ -197,6 +200,7 @@ namespace AvlCollections
                 SwapDelete(ref targetRef, ref treeRef, dir);
             }
             --_count;
+            ++_version;
             return true;
         }
 
@@ -239,17 +243,17 @@ namespace AvlCollections
                     if (second == dir)
                     {
                         var third = dir > 0 ? tree.Left.Right.Longer : tree.Right.Left.Longer;
-                        Rotate3(ref treeRef, oppositeDir, third);
+                        _ = Rotate3(ref treeRef, oppositeDir, third);
                     }
                     else if (second == Direction.None)
                     {
-                        Rotate2(ref treeRef, oppositeDir);
+                        _ = Rotate2(ref treeRef, oppositeDir);
                         tree.Longer = oppositeDir;
                         treeRef.Longer = dir;
                     }
                     else
                     {
-                        Rotate2(ref treeRef, oppositeDir);
+                        _ = Rotate2(ref treeRef, oppositeDir);
                     }
                     if (tree == targetNode)
                     {
@@ -409,10 +413,14 @@ namespace AvlCollections
 
         public struct Enumerator: IEnumerator<T>
         {
+            private readonly CompactAvlTree<T> _tree;
+            private readonly int _version;
             private TreeWalker _walker;
 
             internal Enumerator(CompactAvlTree<T> tree)
             {
+                _tree = tree;
+                _version = _tree._version;
                 _walker = new TreeWalker(tree);
             }
 
@@ -437,11 +445,19 @@ namespace AvlCollections
 
             public bool MoveNext()
             {
+                if (_version != _tree._version)
+                {
+                    throw new InvalidOperationException();
+                }
                 return _walker.MoveNext();
             }
 
             public void Reset()
             {
+                if (_version != _tree._version)
+                {
+                    throw new InvalidOperationException();
+                }
                 _walker.Reset();
             }
         }
