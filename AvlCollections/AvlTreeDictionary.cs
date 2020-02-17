@@ -55,6 +55,7 @@ namespace AvlCollections
                 if (_tree.FindOrCreateNode(item, out var node))
                 {
                     node.Item = item;
+                    _tree.UpdateVersion();
                 }
             }
         }
