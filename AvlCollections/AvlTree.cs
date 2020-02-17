@@ -228,6 +228,11 @@ namespace AvlCollections
             return GetEnumerator();
         }
 
+        internal void UpdateVersion()
+        {
+            _version++;
+        }
+
         private void InternalRemoveNode(Node node)
         {
             var left = node.Left;
