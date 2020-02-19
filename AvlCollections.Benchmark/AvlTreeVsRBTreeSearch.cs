@@ -86,7 +86,7 @@ namespace AvlCollections.Benchmark
             return count;
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public int TestRBTree()
         {
             var count = 0;
@@ -105,7 +105,7 @@ namespace AvlCollections.Benchmark
             return count;
         }
 
-        [Benchmark(Baseline = true)]
+        [Benchmark]
         public int TestList()
         {
             var count = 0;
