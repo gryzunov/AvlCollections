@@ -224,34 +224,26 @@ namespace AvlCollections
 
         public struct Enumerator: IEnumerator<KeyValuePair<TKey, TValue>>
         {
-            private AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker _walker;
+            private AvlTree<KeyValuePair<TKey, TValue>>.Enumerator _enumerator;
 
             internal Enumerator(AvlTree<KeyValuePair<TKey, TValue>> tree)
             {
-                _walker = new AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker(tree);
+                _enumerator = new AvlTree<KeyValuePair<TKey, TValue>>.Enumerator(tree);
             }
 
             public bool MoveNext()
             {
-                return _walker.MoveNext();
+                return _enumerator.MoveNext();
             }
 
             public void Reset()
             {
-                _walker.Reset();
+                _enumerator.Reset();
             }
 
             public KeyValuePair<TKey, TValue> Current
             {
-                get
-                {
-                    var current = _walker.Current;
-                    if (current == null)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                    return current.Item;
-                }
+                get => _enumerator.Current;
             }
 
             object IEnumerator.Current => Current;
@@ -332,34 +324,26 @@ namespace AvlCollections
 
             public struct KeyEnumerator: IEnumerator<TKey>
             {
-                private AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker _walker;
+                private AvlTree<KeyValuePair<TKey, TValue>>.Enumerator _enumerator;
 
-                public KeyEnumerator(AvlTree<KeyValuePair<TKey, TValue>> tree)
+                internal KeyEnumerator(AvlTree<KeyValuePair<TKey, TValue>> tree)
                 {
-                    _walker = new AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker(tree);
+                    _enumerator = new AvlTree<KeyValuePair<TKey, TValue>>.Enumerator(tree);
                 }
 
                 public bool MoveNext()
                 {
-                    return _walker.MoveNext();
+                    return _enumerator.MoveNext();
                 }
 
                 public void Reset()
                 {
-                    _walker.Reset();
+                    _enumerator.Reset();
                 }
 
                 public TKey Current
                 {
-                    get
-                    {
-                        var current = _walker.Current;
-                        if (current == null)
-                        {
-                            throw new InvalidOperationException();
-                        }
-                        return current.Item.Key;
-                    }
+                    get => _enumerator.Current.Key;
                 }
 
                 object IEnumerator.Current => Current;
@@ -441,34 +425,26 @@ namespace AvlCollections
 
             public struct ValueEnumerator: IEnumerator<TValue>
             {
-                private AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker _walker;
+                private AvlTree<KeyValuePair<TKey, TValue>>.Enumerator _enumerator;
 
-                public ValueEnumerator(AvlTree<KeyValuePair<TKey, TValue>> tree)
+                internal ValueEnumerator(AvlTree<KeyValuePair<TKey, TValue>> tree)
                 {
-                    _walker = new AvlTree<KeyValuePair<TKey, TValue>>.TreeWalker(tree);
+                    _enumerator = new AvlTree<KeyValuePair<TKey, TValue>>.Enumerator(tree);
                 }
 
                 public bool MoveNext()
                 {
-                    return _walker.MoveNext();
+                    return _enumerator.MoveNext();
                 }
 
                 public void Reset()
                 {
-                    _walker.Reset();
+                    _enumerator.Reset();
                 }
 
                 public TValue Current
                 {
-                    get
-                    {
-                        var current = _walker.Current;
-                        if (current == null)
-                        {
-                            throw new InvalidOperationException();
-                        }
-                        return current.Item.Value;
-                    }
+                    get => _enumerator.Current.Value;
                 }
 
                 object IEnumerator.Current => Current;
