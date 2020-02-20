@@ -223,11 +223,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AvlTreeVsRBTreeInsertRandom.cs" />
-    <Compile Include="AvlTreeVsRBTreeInsertSorted.cs" />
-    <Compile Include="AvlTreeVsRBTreeSearch.cs" />
-    <Compile Include="AvlTreeWalkCompare.cs" />
-    <Compile Include="AvlVariantsCompare.cs" />
+    <Compile Include="InsertRandomBenchmark.cs" />
+    <Compile Include="InsertSortedBenchmark.cs" />
+    <Compile Include="SearchExistingBenchmark.cs" />
+    <Compile Include="AvlTreeWalkBenchmark.cs" />
+    <Compile Include="AvlVariantsBenchmark.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

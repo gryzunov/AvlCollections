@@ -49,7 +49,7 @@ namespace AvlCollections.Benchmark
         }
 
         [Benchmark]
-        public long TreeWalkIncremental()
+        public long TreeWalkEnumerator()
         {
             long sum = 0;
             foreach (var item in _tree)
