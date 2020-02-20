@@ -5,7 +5,7 @@ using BenchmarkDotNet.Attributes;
 namespace AvlCollections.Benchmark
 {
     [LegacyJitX86Job, RyuJitX64Job]
-    public class AvlTreeVsRBTreeSearch
+    public class SearchExistingBenchmark
     {
         private const int Seed = 1000;
         private const int MaxNumber = 100000;

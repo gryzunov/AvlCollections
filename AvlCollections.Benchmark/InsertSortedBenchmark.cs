@@ -6,7 +6,7 @@ namespace AvlCollections.Benchmark
 {
     [MemoryDiagnoser]
     [LegacyJitX86Job, RyuJitX64Job]
-    public class AvlTreeVsRBTreeInsertSorted
+    public class InsertSortedBenchmark
     {
         private const int Seed = 1000;
         private const int MaxNumber = 100000;

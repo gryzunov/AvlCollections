@@ -227,7 +227,7 @@
     <Compile Include="InsertSortedBenchmark.cs" />
     <Compile Include="SearchExistingBenchmark.cs" />
     <Compile Include="AvlTreeWalkBenchmark.cs" />
-    <Compile Include="AvlVariantsBenchmark.cs" />
+    <Compile Include="AvlTreeVariantsBenchmark.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
