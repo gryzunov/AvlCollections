@@ -5,7 +5,7 @@ using BenchmarkDotNet.Attributes;
 namespace AvlCollections.Benchmark
 {
     [LegacyJitX86Job, RyuJitX64Job]
-    public class SearchExistingBenchmark
+    public class SearchMissingInt32Benchmark
     {
         private const int Seed = 1000;
         private const int MaxNumber = 100000;
@@ -32,16 +32,17 @@ namespace AvlCollections.Benchmark
             {
                 while (true)
                 {
-                    var number = random.Next(MaxNumber);
+                    var number = random.Next(MaxNumber) | 1;
                     if (!set.Add(number))
                     {
                         continue;
                     }
                     _data[i] = number;
-                    _tree.Add(number);
-                    _compactTree.Add(number);
-                    _set.Add(number);
-                    _list.Add(number);
+                    var num1 = number + 1;
+                    _tree.Add(num1);
+                    _compactTree.Add(num1);
+                    _set.Add(num1);
+                    _list.Add(num1);
                     break;
                 }
             }

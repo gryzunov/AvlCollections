@@ -223,9 +223,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InsertRandomBenchmark.cs" />
-    <Compile Include="InsertSortedBenchmark.cs" />
-    <Compile Include="SearchExistingBenchmark.cs" />
+    <Compile Include="InsertRandomDecimalBenchmark.cs" />
+    <Compile Include="InsertRandomInt32Benchmark.cs" />
+    <Compile Include="InsertSortedDecimalBenchmark.cs" />
+    <Compile Include="InsertSortedInt32Benchmark.cs" />
+    <Compile Include="SearchExistingDecimalBenchmark.cs" />
+    <Compile Include="SearchMissingDecimalBenchmark.cs" />
+    <Compile Include="SearchMissingInt32Benchmark.cs" />
+    <Compile Include="SearchExistingInt32Benchmark.cs" />
     <Compile Include="AvlTreeWalkBenchmark.cs" />
     <Compile Include="AvlTreeVariantsBenchmark.cs" />
     <Compile Include="Program.cs" />

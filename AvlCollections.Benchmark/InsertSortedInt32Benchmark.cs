@@ -6,7 +6,7 @@ namespace AvlCollections.Benchmark
 {
     [MemoryDiagnoser]
     [LegacyJitX86Job, RyuJitX64Job]
-    public class InsertRandomBenchmark
+    public class InsertSortedInt32Benchmark
     {
         private const int Seed = 1000;
         private const int MaxNumber = 100000;
@@ -30,6 +30,7 @@ namespace AvlCollections.Benchmark
                 }
                 _data[i] = number;
             }
+            Array.Sort(_data);
         }
 
         [Benchmark]

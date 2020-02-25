@@ -6,11 +6,11 @@ namespace AvlCollections.Benchmark
 {
     [MemoryDiagnoser]
     [LegacyJitX86Job, RyuJitX64Job]
-    public class InsertSortedBenchmark
+    public class InsertRandomDecimalBenchmark
     {
         private const int Seed = 1000;
         private const int MaxNumber = 100000;
-        private int[] _data;
+        private decimal[] _data;
 
         [Params(100, 1000, 10000)]
         public int Count { get; set; }
@@ -18,7 +18,7 @@ namespace AvlCollections.Benchmark
         [GlobalSetup]
         public void GlobalSetup()
         {
-            _data = new int[Count];
+            _data = new decimal[Count];
             var random = new Random(Seed);
             var set = new HashSet<int>(Count);
             for (int i = 0; i < _data.Length; i++)
@@ -30,13 +30,12 @@ namespace AvlCollections.Benchmark
                 }
                 _data[i] = number;
             }
-            Array.Sort(_data);
         }
 
         [Benchmark]
         public void TestAvlTree()
         {
-            var tree = new AvlTree<int>();
+            var tree = new AvlTree<decimal>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var n = _data[i];
@@ -47,7 +46,7 @@ namespace AvlCollections.Benchmark
         [Benchmark]
         public void TestCompactAvlTree()
         {
-            var tree = new CompactAvlTree<int>();
+            var tree = new CompactAvlTree<decimal>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var number = _data[i];
@@ -58,7 +57,7 @@ namespace AvlCollections.Benchmark
         [Benchmark(Baseline = true)]
         public void TestRBTree()
         {
-            var set = new SortedSet<int>();
+            var set = new SortedSet<decimal>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var number = _data[i];
@@ -69,7 +68,7 @@ namespace AvlCollections.Benchmark
         [Benchmark]
         public void TestList()
         {
-            var list = new List<int>();
+            var list = new List<decimal>();
             for (int i = 0; i < _data.Length; i++)
             {
                 var number = _data[i];
