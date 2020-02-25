@@ -97,7 +97,9 @@ namespace AvlCollections.Tests
 
         private void CheckBalance(AvlTree<int> tree)
         {
+#if DEBUG
             CheckDepth(tree.Root);
+#endif
         }
 
         private static int CheckDepth(AvlTree<int>.Node node)

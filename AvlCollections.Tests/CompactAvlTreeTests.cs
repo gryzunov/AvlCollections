@@ -74,7 +74,9 @@ namespace AvlCollections.Tests
 
         private void CheckBalance(CompactAvlTree<int> tree)
         {
+#if DEBUG
             CheckDepth(tree.Root);
+#endif
         }
 
         private static int CheckDepth(CompactAvlTree<int>.Node node)
