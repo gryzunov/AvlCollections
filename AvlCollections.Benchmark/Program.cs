@@ -6,10 +6,7 @@ namespace AvlCollections.Benchmark
     {
         static void Main(string[] args)
         {
-            _ = BenchmarkRunner.Run<AvlTreeWalkBenchmark>();
-            //_ = BenchmarkRunner.Run<AvlTreeVsRBTreeSearch>();
-            //_ = BenchmarkRunner.Run<AvlTreeVsRBTreeInsertRandom>();
-            //_ = BenchmarkRunner.Run<AvlTreeVsRBTreeInsertSorted>();
+            _ = BenchmarkRunner.Run(typeof(AvlTreeWalkBenchmark).Assembly);
         }
     }
 }
