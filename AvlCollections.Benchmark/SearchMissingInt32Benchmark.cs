@@ -61,7 +61,7 @@ namespace AvlCollections.Benchmark
                     ++count;
                 }
             }
-            if (count != Count)
+            if (count != 0)
             {
                 throw new Exception("Search error in AvlTree");
             }
@@ -80,7 +80,7 @@ namespace AvlCollections.Benchmark
                     ++count;
                 }
             }
-            if (count != Count)
+            if (count != 0)
             {
                 throw new Exception("Search error in CompactAvlTree");
             }
@@ -99,7 +99,7 @@ namespace AvlCollections.Benchmark
                     ++count;
                 }
             }
-            if (count != Count)
+            if (count != 0)
             {
                 throw new Exception("Search error in RBTree");
             }
@@ -118,7 +118,7 @@ namespace AvlCollections.Benchmark
                     ++count;
                 }
             }
-            if (count != Count)
+            if (count != 0)
             {
                 throw new Exception("Search error in List");
             }
