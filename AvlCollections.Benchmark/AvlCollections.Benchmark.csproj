@@ -227,7 +227,9 @@
     <Compile Include="InsertRandomInt32Benchmark.cs" />
     <Compile Include="InsertSortedDecimalBenchmark.cs" />
     <Compile Include="InsertSortedInt32Benchmark.cs" />
+    <Compile Include="RemoveRandomDecimalBenchmark.cs" />
     <Compile Include="SearchExistingDecimalBenchmark.cs" />
+    <Compile Include="RemoveRandomInt32Benchmark.cs" />
     <Compile Include="SearchMissingDecimalBenchmark.cs" />
     <Compile Include="SearchMissingInt32Benchmark.cs" />
     <Compile Include="SearchExistingInt32Benchmark.cs" />
