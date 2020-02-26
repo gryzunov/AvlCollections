@@ -24,26 +24,31 @@ namespace AvlCollections.Benchmark
             var random = new Random(Seed);
             var set = new HashSet<int>(Count);
             _data = new int[Count];
+            for (int i = 0; i < Count; i++)
+            {
+                int number;
+                do
+                {
+                    number = random.Next(MaxNumber);
+                } while (!set.Add(number));
+                _data[i] = number;
+            }
+        }
+
+        [IterationSetup]
+        public void IterationSetup()
+        {
             _tree = new AvlTree<int>();
             _compactTree = new CompactAvlTree<int>();
             _list = new List<int>();
             _set = new SortedSet<int>();
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < _data.Length; i++)
             {
-                while (true)
-                {
-                    var number = random.Next(MaxNumber);
-                    if (!set.Add(number))
-                    {
-                        continue;
-                    }
-                    _data[i] = number;
-                    _tree.Add(number);
-                    _compactTree.Add(number);
-                    _set.Add(number);
-                    _list.Add(number);
-                    break;
-                }
+                var number = _data[i];
+                _tree.Add(number);
+                _compactTree.Add(number);
+                _set.Add(number);
+                _list.Add(number);
             }
             _list.Sort();
         }
@@ -62,7 +67,7 @@ namespace AvlCollections.Benchmark
             }
             if (count != Count)
             {
-                throw new Exception("Remove error in AvlTree");
+                throw new Exception($"Remove error in AvlTree. Expected count={Count}, actual count={count}");
             }
             return count;
         }
@@ -81,7 +86,7 @@ namespace AvlCollections.Benchmark
             }
             if (count != Count)
             {
-                throw new Exception("Remove error in CompactAvlTree");
+                throw new Exception($"Remove error in CompactAvlTree. Expected count={Count}, actual count={count}");
             }
             return count;
         }
@@ -100,7 +105,7 @@ namespace AvlCollections.Benchmark
             }
             if (count != Count)
             {
-                throw new Exception("Remove error in RBTree");
+                throw new Exception($"Remove error in RBTree. Expected count={Count}, actual count={count}");
             }
             return count;
         }
@@ -121,7 +126,7 @@ namespace AvlCollections.Benchmark
             }
             if (count != Count)
             {
-                throw new Exception("Remove error in List");
+                throw new Exception($"Remove error in List. Expected count={Count}, actual count={count}");
             }
             return count;
         }
