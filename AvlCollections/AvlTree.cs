@@ -86,10 +86,6 @@ namespace AvlCollections
 
         public Node FindNode(T item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
             var node = _root;
             while (node != null)
             {
@@ -105,10 +101,6 @@ namespace AvlCollections
 
         public bool FindOrCreateNode(T item, out Node node)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
             var current = _root;
             while (current != null)
             {
