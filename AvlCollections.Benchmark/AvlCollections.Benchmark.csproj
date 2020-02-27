@@ -234,7 +234,6 @@
     <Compile Include="SearchMissingInt32Benchmark.cs" />
     <Compile Include="SearchExistingInt32Benchmark.cs" />
     <Compile Include="AvlTreeWalkBenchmark.cs" />
-    <Compile Include="AvlTreeVariantsBenchmark.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
