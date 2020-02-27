@@ -30,21 +30,17 @@ namespace AvlCollections.Benchmark
             _set = new SortedSet<decimal>();
             for (int i = 0; i < Count; i++)
             {
-                while (true)
+                int number;
+                do
                 {
-                    var number = random.Next(MaxNumber) | 1;
-                    if (!set.Add(number))
-                    {
-                        continue;
-                    }
-                    _data[i] = number;
-                    var num1 = (decimal) (number + 1);
-                    _tree.Add(num1);
-                    _compactTree.Add(num1);
-                    _set.Add(num1);
-                    _list.Add(num1);
-                    break;
-                }
+                    number = random.Next(MaxNumber) | 1;
+                } while (!set.Add(number));
+                _data[i] = number;
+                var num1 = (decimal) (number + 1);
+                _tree.Add(num1);
+                _compactTree.Add(num1);
+                _set.Add(num1);
+                _list.Add(num1);
             }
             _list.Sort();
         }

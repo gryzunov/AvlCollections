@@ -23,11 +23,11 @@ namespace AvlCollections.Benchmark
             var set = new HashSet<int>(Count);
             for (int i = 0; i < _data.Length; i++)
             {
-                var number = random.Next(MaxNumber);
-                if (!set.Add(number))
+                int number;
+                do
                 {
-                    continue;
-                }
+                    number = random.Next(MaxNumber);
+                } while (!set.Add(number));
                 _data[i] = number;
             }
             Array.Sort(_data);
