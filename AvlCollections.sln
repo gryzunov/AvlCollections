@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvlCollections", "AvlCollec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvlCollections.Benchmark", "AvlCollections.Benchmark\AvlCollections.Benchmark.csproj", "{A51DC8D2-C0EC-419C-B71E-33AC5BFCED75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvlCollections.Tests", "AvlCollections.Tests\AvlCollections.Tests.csproj", "{EF0EF662-F272-4CC2-9323-D6AB62A0BB39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvlCollections.Tests", "AvlCollections.Tests\AvlCollections.Tests.csproj", "{EF0EF662-F272-4CC2-9323-D6AB62A0BB39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8CEEB527-07C2-4D23-A0E3-9EA3E6895729}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
